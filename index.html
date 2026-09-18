@@ -1,0 +1,2774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="description" content="Cyber Shadow PRO — Defensive cybersecurity intelligence platform with Shodan, threat intel, and security tools." />
+<meta name="theme-color" content="#05070d" />
+<title>Cyber Shadow PRO — Security Intelligence Platform</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: { extend: {
+    colors: { shadow: { 950:'#05070d',900:'#0a0e17',850:'#0e1320',800:'#131a2b',700:'#1c2540',600:'#2a3654' }, accent: { DEFAULT:'#3b82f6',cyan:'#22d3ee',violet:'#8b5cf6',emerald:'#10b981',amber:'#f59e0b',rose:'#f43f5e' } },
+    fontFamily: { sans:['Inter','system-ui','-apple-system','Segoe UI','Roboto','sans-serif'], mono:['JetBrains Mono','Fira Code','Consolas','monospace'] },
+    boxShadow: { glow:'0 0 24px -4px rgba(59,130,246,0.35)','glow-sm':'0 0 12px -2px rgba(59,130,246,0.3)',card:'0 1px 3px rgba(0,0,0,0.4), 0 8px 24px -8px rgba(0,0,0,0.5)' },
+    animation: { 'fade-in':'fadeIn .3s ease-out','slide-up':'slideUp .3s ease-out','pulse-slow':'pulse 3s cubic-bezier(.4,0,.6,1) infinite' },
+    keyframes: { fadeIn:{'0%':{opacity:'0'},'100%':{opacity:'1'}}, slideUp:{'0%':{opacity:'0',transform:'translateY(8px)'},'100%':{opacity:'1',transform:'translateY(0)'}} }
+  }}
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<style>
+  :root{color-scheme:dark}
+  html,body,#root{height:100%;margin:0}
+  body{background:#05070d;color:#e2e8f0;overflow-x:hidden;font-family:'Inter',system-ui,sans-serif}
+  *{box-sizing:border-box}
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-track{background:#0a0e17}
+  ::-webkit-scrollbar-thumb{background:#2a3654;border-radius:999px}
+  ::-webkit-scrollbar-thumb:hover{background:#1c2540}
+  :focus-visible{outline:2px solid #3b82f6;outline-offset:2px}
+  .glass{background:rgba(10,14,23,.72);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.05)}
+  .card{background:rgba(10,14,23,.72);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.05);border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.4),0 8px 24px -8px rgba(0,0,0,.5)}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:8px 14px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s ease;border:1px solid transparent}
+  .btn-primary{background:#3b82f6;color:white}
+  .btn-primary:hover{background:#2563eb;box-shadow:0 0 20px -4px rgba(59,130,246,.5)}
+  .btn-ghost{background:transparent;color:#cbd5e1;border-color:rgba(255,255,255,.1)}
+  .btn-ghost:hover{background:rgba(255,255,255,.05);color:white}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:6px;font-size:10.5px;font-weight:500;letter-spacing:.03em;text-transform:uppercase}
+  .input{width:100%;background:#0e1320;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 12px;font-size:13px;color:#e2e8f0;transition:border-color .2s,box-shadow .2s}
+  .input:focus{outline:none;border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,.15)}
+  .input::placeholder{color:#64748b}
+  select.input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:30px}
+  .mono{font-family:'JetBrains Mono',Consolas,monospace}
+  .skeleton{background:linear-gradient(90deg,rgba(255,255,255,.03) 25%,rgba(255,255,255,.07) 50%,rgba(255,255,255,.03) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:6px}
+  @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+  .truncate-2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .truncate-3{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .table-hover tr:hover{background:rgba(255,255,255,.03)}
+  @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+  .sev-critical{background:rgba(220,38,38,.15);color:#fca5a5;border:1px solid rgba(220,38,38,.3)}
+  .sev-high{background:rgba(249,115,22,.15);color:#fdba74;border:1px solid rgba(249,115,22,.3)}
+  .sev-medium{background:rgba(234,179,8,.15);color:#fde047;border:1px solid rgba(234,179,8,.3)}
+  .sev-low{background:rgba(34,197,94,.15);color:#86efac;border:1px solid rgba(34,197,94,.3)}
+  .sev-unknown{background:rgba(100,116,139,.15);color:#cbd5e1;border:1px solid rgba(100,116,139,.3)}
+  .badge-live{background:rgba(16,185,129,.15);color:#6ee7b7;border:1px solid rgba(16,185,129,.3)}
+  .badge-cached{background:rgba(245,158,11,.15);color:#fcd34d;border:1px solid rgba(245,158,11,.3)}
+  .badge-demo{background:rgba(244,63,94,.15);color:#fda4af;border:1px solid rgba(244,63,94,.3)}
+  .badge-polling{background:rgba(56,189,248,.15);color:#7dd3fc;border:1px solid rgba(56,189,248,.3)}
+  .badge-server{background:rgba(139,92,246,.15);color:#c4b5fd;border:1px solid rgba(139,92,246,.3)}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" data-type="module">
+const { useState, useEffect, useRef, useReducer, useCallback, useMemo, createContext, useContext, Fragment } = React;
+const { createRoot } = ReactDOM;
+
+/* ═══════════════════════════════════════════════════════════════════════
+   API LAYER
+   ═══════════════════════════════════════════════════════════════════════ */
+
+class ApiError extends Error {
+  constructor(code, message, status) { super(message); this.code = code; this.status = status; }
+}
+
+const cache = new Map();
+const inflight = new Map();
+
+async function request(url, { timeout = 15000, ttl = 300, headers = {}, method = 'GET', body } = {}) {
+  const key = `${method}:${url}:${body || ''}`;
+  const cached = cache.get(key);
+  if (cached && cached.expires > Date.now()) {
+    return { data: cached.data, _provenance: { source: cached.source, status: 'CACHED', retrieved_at: cached.retrieved_at } };
+  }
+  if (inflight.has(key)) return inflight.get(key);
+
+  const source = (() => { try { return new URL(url).hostname.replace('www.', ''); } catch { return 'unknown'; } })();
+
+  const promise = (async () => {
+    const controller = new AbortController();
+    const tid = setTimeout(() => controller.abort(), timeout);
+    try {
+      const res = await fetch(url, { method, headers: { 'Accept': 'application/json', ...headers }, body, signal: controller.signal });
+      clearTimeout(tid);
+      if (res.status === 429) throw new ApiError('RATE_LIMITED', `${source} rate limit reached. Please wait and retry.`, 429);
+      if (res.status === 401 || res.status === 403) throw new ApiError('AUTH_REQUIRED', `${source} rejected the request (${res.status}). API key may be required.`, res.status);
+      if (!res.ok) throw new ApiError('HTTP_ERROR', `${source} returned HTTP ${res.status}`, res.status);
+      const text = await res.text();
+      let data = null;
+      try { data = text ? JSON.parse(text) : null; } catch { throw new ApiError('INVALID_RESPONSE', `${source} returned invalid JSON.`, 502); }
+      const envelope = { data, _provenance: { source, status: 'LIVE', retrieved_at: new Date().toISOString() } };
+      cache.set(key, { data, source, retrieved_at: envelope._provenance.retrieved_at, expires: Date.now() + ttl * 1000 });
+      return envelope;
+    } catch (e) {
+      clearTimeout(tid);
+      if (e.name === 'AbortError') throw new ApiError('TIMEOUT', `${source} request timed out.`, 504);
+      if (e instanceof ApiError) throw e;
+      throw new ApiError('NETWORK', `Unable to reach ${source}. CORS or network issue.`, 0);
+    } finally { inflight.delete(key); }
+  })();
+
+  inflight.set(key, promise);
+  return promise;
+}
+
+/* ── CORS Proxy helper for APIs that block browser requests ────── */
+function proxied(url) {
+  return `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+}
+
+/* ── Data Sources ─────────────────────────────────────────────── */
+
+const Sources = {
+  /* NVD — CORS enabled, no key */
+  nvdSearch: ({ keyword = '', cveId = '', resultsPerPage = 20, startIndex = 0 } = {}) => {
+    const p = new URLSearchParams();
+    if (keyword) p.set('keywordSearch', keyword);
+    if (cveId) p.set('cveId', cveId);
+    p.set('resultsPerPage', Math.min(resultsPerPage, 100));
+    p.set('startIndex', startIndex);
+    return request(`https://services.nvd.nist.gov/rest/json/cves/2.0?${p}`, { ttl: 600, timeout: 20000 });
+  },
+
+  /* CISA KEV — CORS enabled, no key */
+  kev: () => request('https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json', { ttl: 3600, timeout: 20000 }),
+
+  /* OSV.dev — CORS enabled, no key */
+  osvQuery: (body) => request('https://api.osv.dev/v1/query', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), ttl: 600 }),
+
+  /* GitHub — CORS enabled, no key (60/hr) */
+  githubRepos: ({ q, sort = 'stars', order = 'desc', per_page = 30, page = 1 } = {}) =>
+    request(`https://api.github.com/search/repositories?q=${encodeURIComponent(q)}&sort=${sort}&order=${order}&per_page=${per_page}&page=${page}`, { ttl: 600 }),
+  githubRateLimit: () => request('https://api.github.com/rate_limit', { ttl: 60 }),
+
+  /* News via RSS2JSON bridge */
+  news: (feedUrl) => request(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feedUrl)}`, { ttl: 900, timeout: 15000 }),
+
+  /* IP lookup — ipapi.co CORS enabled */
+  ipLookup: (ip) => request(`https://ipapi.co/${ip}/json/`, { ttl: 3600, timeout: 8000 }),
+
+  /* RDAP WHOIS — CORS enabled */
+  rdap: (query) => {
+    const isIp = /^(\d{1,3}\.){3}\d{1,3}$/.test(query);
+    return request(`https://rdap.org/${isIp ? 'ip' : 'domain'}/${encodeURIComponent(query)}`, { ttl: 3600, timeout: 10000 });
+  },
+
+  /* ── SHODAN — Free InternetDB API (no key, CORS enabled) ───── */
+  shodanInternetDB: (ip) => request(`https://internetdb.shodan.io/${ip}`, { ttl: 900, timeout: 10000 }),
+
+  /* ── SHODAN — Full API via CORS proxy (requires user API key) ─ */
+  shodanHost: (ip, apiKey) => request(proxied(`https://api.shodan.io/shodan/host/${encodeURIComponent(ip)}?key=${apiKey}`), { ttl: 900, timeout: 20000 }),
+  shodanSearch: (query, apiKey, page = 1) => request(proxied(`https://api.shodan.io/shodan/host/search?key=${apiKey}&query=${encodeURIComponent(query)}&page=${page}`), { ttl: 900, timeout: 25000 }),
+  shodanApiInfo: (apiKey) => request(proxied(`https://api.shodan.io/api-info?key=${apiKey}`), { ttl: 300, timeout: 15000 }),
+  shodanPorts: () => request('https://api.shodan.io/shodan/ports', { ttl: 86400 }),
+
+  /* ── HTTP Security Headers via proxy ──────────────────────── */
+  securityHeaders: (url) => request(proxied(url), { ttl: 300, timeout: 15000, headers: { 'Accept': 'text/html,application/xhtml+xml' } }),
+
+  /* ── Certificate Transparency (crt.sh) ────────────────────── */
+  crtsh: (domain) => request(`https://crt.sh/?q=${encodeURIComponent(domain)}&output=json`, { ttl: 3600, timeout: 20000 }),
+
+  /* ── URLhaus (abuse.ch) — CORS enabled ────────────────────── */
+  urlhaus: (url) => request(`https://urlhaus-api.abuse.ch/v1/url/`, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: `url=${encodeURIComponent(url)}`, ttl: 600 }),
+
+  /* ── AbuseIPDB (public endpoint, no key) ─────────────────── */
+  abuseIpDb: (ip, key) => key
+    ? request(proxied(`https://api.abuseipdb.com/api/v2/check?ipAddress=${ip}&maxAgeInDays=90`), { headers: { 'Key': key, 'Accept': 'application/json' }, ttl: 900 })
+    : Promise.reject(new ApiError('AUTH_REQUIRED', 'AbuseIPDB API key required. Add it in Settings.', 401)),
+
+  /* ── VirusTotal (via user key) ────────────────────────────── */
+  virusTotal: (ioc, type, key) => {
+    if (!key) return Promise.reject(new ApiError('AUTH_REQUIRED', 'VirusTotal API key required.', 401));
+    const path = type === 'ip' ? `ip_addresses/${ioc}` : type === 'domain' ? `domains/${ioc}` : `urls/${encodeURIComponent(btoa(ioc))}`;
+    return request(proxied(`https://www.virustotal.com/api/v3/${path}`), { headers: { 'x-apikey': key }, ttl: 900, timeout: 20000 });
+  },
+};
+
+/* ═══════════════════════════════════════════════════════════════════════
+   GLOBAL STATE
+   ═══════════════════════════════════════════════════════════════════════ */
+
+const AppContext = createContext(null);
+const initialPrefs = {
+  animationIntensity: 'medium',
+  refreshInterval: 300,
+  defaultPage: '/',
+  timezone: 'local',
+  notifications: { alerts: true, news: false, sources: true },
+  shodanApiKey: '',   // stored locally, never sent to our server
+  abuseIpDbKey: '',
+  virusTotalKey: '',
+};
+
+function appReducer(state, action) {
+  switch (action.type) {
+    case 'TOGGLE_SIDEBAR': return { ...state, sidebarCollapsed: !state.sidebarCollapsed };
+    case 'OPEN_COMMAND': return { ...state, commandOpen: true };
+    case 'CLOSE_COMMAND': return { ...state, commandOpen: false };
+    case 'ADD_TOAST': return { ...state, toasts: [...state.toasts, action.toast] };
+    case 'REMOVE_TOAST': return { ...state, toasts: state.toasts.filter(t => t.id !== action.id) };
+    case 'SET_PREFS': return { ...state, preferences: { ...state.preferences, ...action.prefs } };
+    default: return state;
+  }
+}
+
+function AppProvider({ children }) {
+  const [state, dispatch] = useReducer(appReducer, null, () => {
+    let prefs = initialPrefs, sidebar = false;
+    try {
+      const p = localStorage.getItem('csp:prefs');
+      if (p) prefs = { ...initialPrefs, ...JSON.parse(p) };
+      sidebar = localStorage.getItem('csp:sidebar') === 'collapsed';
+    } catch {}
+    return { sidebarCollapsed: sidebar, commandOpen: false, toasts: [], preferences: prefs };
+  });
+
+  useEffect(() => { try { localStorage.setItem('csp:prefs', JSON.stringify(state.preferences)); } catch {} }, [state.preferences]);
+  useEffect(() => { try { localStorage.setItem('csp:sidebar', state.sidebarCollapsed ? 'collapsed' : 'expanded'); } catch {} }, [state.sidebarCollapsed]);
+
+  const toast = useCallback((message, type = 'info', duration = 4000) => {
+    const id = `t-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+    dispatch({ type: 'ADD_TOAST', toast: { id, message, type, duration } });
+  }, []);
+
+  return <AppContext.Provider value={{ state, dispatch, toast }}>{children}</AppContext.Provider>;
+}
+
+const useApp = () => { const c = useContext(AppContext); if (!c) throw new Error('useApp'); return c; };
+
+/* ═══════════════════════════════════════════════════════════════════════
+   HOOKS
+   ═══════════════════════════════════════════════════════════════════════ */
+
+function useApi(fetcher, deps = [], opts = {}) {
+  const { immediate = true } = opts;
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(immediate);
+  const [error, setError] = useState(null);
+  const [lastUpdated, setLastUpdated] = useState(null);
+  const mRef = useRef(true);
+  const fRef = useRef(fetcher); fRef.current = fetcher;
+
+  const run = useCallback(async () => {
+    setLoading(true); setError(null);
+    try { const r = await fRef.current(); if (!mRef.current) return; setData(r); setLastUpdated(new Date().toISOString()); }
+    catch (e) { if (mRef.current) setError(e); }
+    finally { if (mRef.current) setLoading(false); }
+  }, deps); // eslint-disable-line
+
+  useEffect(() => { mRef.current = true; if (immediate) run(); return () => { mRef.current = false; }; }, [run, immediate]);
+  return { data, loading, error, refetch: run, lastUpdated };
+}
+
+function useDebounce(value, delay = 300) {
+  const [v, setV] = useState(value);
+  useEffect(() => { const id = setTimeout(() => setV(value), delay); return () => clearTimeout(id); }, [value, delay]);
+  return v;
+}
+
+function useReducedMotion() {
+  const [r, setR] = useState(() => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  useEffect(() => { const mq = window.matchMedia('(prefers-reduced-motion: reduce)'); const h = e => setR(e.matches); mq.addEventListener?.('change', h); return () => mq.removeEventListener?.('change', h); }, []);
+  return r;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   UI PRIMITIVES
+   ═══════════════════════════════════════════════════════════════════════ */
+
+function SourceBadge({ status = 'LIVE', source, retrievedAt, className = '' }) {
+  const cls = { LIVE:'badge-live', CACHED:'badge-cached', DEMO:'badge-demo', POLLING:'badge-polling', SERVER:'badge-server' }[status] || 'badge-cached';
+  return (
+    <span className={`badge ${cls} ${className}`} title={retrievedAt ? `Retrieved: ${new Date(retrievedAt).toLocaleString()}` : undefined}>
+      <span className="w-1.5 h-1.5 rounded-full bg-current opacity-70" />
+      {source && <span className="font-normal normal-case opacity-80">{source}</span>}
+      <span>{status}</span>
+    </span>
+  );
+}
+
+function SeverityBadge({ severity }) {
+  const s = (severity || 'UNKNOWN').toUpperCase();
+  const cls = { CRITICAL:'sev-critical', HIGH:'sev-high', MEDIUM:'sev-medium', LOW:'sev-low' }[s] || 'sev-unknown';
+  return <span className={`badge ${cls}`}>{s}</span>;
+}
+
+function Loading({ lines = 3 }) {
+  return (
+    <div className="space-y-3" aria-live="polite" aria-busy="true">
+      {Array.from({ length: lines }).map((_, i) => (
+        <div key={i} className="skeleton h-4" style={{ width: `${70 + Math.random() * 25}%` }} />
+      ))}
+    </div>
+  );
+}
+
+function ErrorCard({ error, onRetry }) {
+  return (
+    <div role="alert" className="rounded-lg border border-rose-500/25 bg-rose-500/10 p-4 text-sm">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div className="font-semibold text-rose-300">{error?.code || 'ERROR'}</div>
+          <div className="text-rose-200/80 mt-0.5 break-words">{error?.message || 'Something went wrong.'}</div>
+        </div>
+        {onRetry && <button onClick={onRetry} className="btn-ghost text-xs shrink-0">Retry</button>}
+      </div>
+    </div>
+  );
+}
+
+function EmptyState({ icon = '◌', title = 'No data', message }) {
+  return (
+    <div className="text-center py-8">
+      <div className="text-3xl text-slate-600 mb-2" aria-hidden="true">{icon}</div>
+      <div className="text-sm font-medium text-slate-400">{title}</div>
+      {message && <div className="text-xs text-slate-500 mt-1 max-w-md mx-auto">{message}</div>}
+    </div>
+  );
+}
+
+function DataCard({ title, subtitle, icon, actions, children, footer, loading, error, empty, onRetry }) {
+  return (
+    <section className="card p-5 animate-fade-in" aria-busy={loading}>
+      <header className="flex items-start justify-between gap-3 mb-4">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2">
+            {icon && <span className="text-cyan-400 text-base" aria-hidden="true">{icon}</span>}
+            <h2 className="text-sm font-semibold text-slate-100 truncate">{title}</h2>
+          </div>
+          {subtitle && <p className="text-xs text-slate-500 mt-0.5 truncate">{subtitle}</p>}
+        </div>
+        {actions && <div className="flex items-center gap-2 shrink-0">{actions}</div>}
+      </header>
+      {loading ? <Loading /> : error ? <ErrorCard error={error} onRetry={onRetry} /> : empty ? <EmptyState /> : children}
+      {footer && <footer className="mt-4 pt-3 border-t border-white/5 text-xs text-slate-500">{footer}</footer>}
+    </section>
+  );
+}
+
+function Stat({ label, value, hint, tone = 'default' }) {
+  const t = { default:'text-slate-100', accent:'text-cyan-400', critical:'text-rose-400', warning:'text-amber-400', good:'text-emerald-400' }[tone];
+  return (
+    <div className="card p-4">
+      <div className="text-[11px] uppercase tracking-wider text-slate-500">{label}</div>
+      <div className={`text-2xl font-semibold mt-1 ${t}`}>{value}</div>
+      {hint && <div className="text-xs text-slate-500 mt-1">{hint}</div>}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   NETWORK BACKGROUND
+   ═══════════════════════════════════════════════════════════════════════ */
+
+function NetworkBackground({ intensity = 'medium', opacity = 0.45 }) {
+  const ref = useRef(null);
+  const reduced = useReducedMotion();
+
+  useEffect(() => {
+    if (reduced || intensity === 'off') return;
+    const canvas = ref.current; if (!canvas) return;
+    const ctx = canvas.getContext('2d', { alpha: true }); if (!ctx) return;
+
+    const density = intensity === 'high' ? 1 : intensity === 'low' ? 0.35 : 0.7;
+    const isLow = (navigator.hardwareConcurrency || 4) <= 4;
+    const nodeCount = Math.min(Math.floor((isLow ? 40 : 80) * density), 100);
+    const FPS = isLow ? 30 : 45;
+    let W, H, dpr, nodes = [], particles = [], mouse = { x: -9999, y: -9999 }, raf, running = true, last = 0;
+
+    function resize() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = canvas.clientWidth; H = canvas.clientHeight;
+      canvas.width = W * dpr; canvas.height = H * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      nodes = Array.from({ length: nodeCount }, () => ({ x: Math.random()*W, y: Math.random()*H, vx: (Math.random()-.5)*.25, vy: (Math.random()-.5)*.25, r: Math.random()*1.5+.5, pulse: Math.random()*Math.PI*2 }));
+      particles = [];
+    }
+
+    function draw(now) {
+      if (!running) return;
+      raf = requestAnimationFrame(draw);
+      if (now - last < 1000/FPS) return;
+      last = now;
+      ctx.clearRect(0, 0, W, H);
+      ctx.strokeStyle = 'rgba(59,130,246,.03)'; ctx.lineWidth = 1;
+      for (let x = 0; x < W; x += 64) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+      for (let y = 0; y < H; y += 64) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+      for (const n of nodes) { n.x += n.vx; n.y += n.vy; n.pulse += .02; if (n.x<0||n.x>W) n.vx*=-1; if (n.y<0||n.y>H) n.vy*=-1; const dx=mouse.x-n.x, dy=mouse.y-n.y, d=Math.hypot(dx,dy); if(d<160){n.x+=dx*.0008;n.y+=dy*.0008;} }
+      for (let i = 0; i < nodes.length; i++) for (let j = i+1; j < nodes.length; j++) { const a=nodes[i],b=nodes[j],d=Math.hypot(a.x-b.x,a.y-b.y); if(d<150){ctx.strokeStyle=`rgba(34,211,238,${(1-d/150)*.14})`;ctx.lineWidth=.6;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();} }
+      for (const n of nodes) { const g=.5+Math.sin(n.pulse)*.3; ctx.fillStyle=`rgba(59,130,246,${.5*g})`; ctx.beginPath(); ctx.arc(n.x,n.y,n.r,0,Math.PI*2); ctx.fill(); }
+      if (Math.random()<.04 && particles.length<14 && nodes.length>1) { const a=nodes[Math.floor(Math.random()*nodes.length)],b=nodes[Math.floor(Math.random()*nodes.length)]; if(a!==b) particles.push({from:a,to:b,t:0,speed:.008+Math.random()*.012}); }
+      particles = particles.filter(p=>p.t<1);
+      for (const p of particles) { p.t+=p.speed; const x=p.from.x+(p.to.x-p.from.x)*p.t,y=p.from.y+(p.to.y-p.from.y)*p.t; ctx.fillStyle=`rgba(34,211,238,${.8*(1-p.t)})`; ctx.beginPath(); ctx.arc(x,y,1.6,0,Math.PI*2); ctx.fill(); }
+      const sy=(now/30)%H; const gr=ctx.createLinearGradient(0,sy-40,0,sy+40); gr.addColorStop(0,'rgba(34,211,238,0)'); gr.addColorStop(.5,'rgba(34,211,238,.05)'); gr.addColorStop(1,'rgba(34,211,238,0)'); ctx.fillStyle=gr; ctx.fillRect(0,sy-40,W,80);
+    }
+
+    const onMove = e => { mouse = { x: e.clientX, y: e.clientY }; };
+    const onLeave = () => { mouse = { x: -9999, y: -9999 }; };
+    const onVis = () => { running = !document.hidden; if (running) raf = requestAnimationFrame(draw); };
+    resize();
+    window.addEventListener('resize', resize);
+    window.addEventListener('mousemove', onMove, { passive: true });
+    window.addEventListener('mouseleave', onLeave);
+    document.addEventListener('visibilitychange', onVis);
+    raf = requestAnimationFrame(draw);
+    return () => { running = false; cancelAnimationFrame(raf); window.removeEventListener('resize', resize); window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseleave', onLeave); document.removeEventListener('visibilitychange', onVis); };
+  }, [intensity, reduced]);
+
+  return <canvas ref={ref} aria-hidden="true" className="fixed inset-0 w-full h-full pointer-events-none" style={{ opacity, zIndex: 0 }} />;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   NAVIGATION
+   ═══════════════════════════════════════════════════════════════════════ */
+
+const NAV_ITEMS = [
+  { to: '/', label: 'Dashboard', icon: '▦', end: true },
+  { to: '/threat-intel', label: 'Threat Intelligence', icon: '◈' },
+  { to: '/vulnerabilities', label: 'Vulnerabilities', icon: '⚠' },
+  { to: '/shodan', label: 'Shodan', icon: '◉' },
+  { to: '/github', label: 'GitHub Intelligence', icon: '⌥' },
+  { to: '/news', label: 'Security News', icon: '▤' },
+  { to: '/threat-map', label: 'Global Threat Map', icon: '◍' },
+  { to: '/tools', label: 'Security Tools', icon: '⚒' },
+  { to: '/osint', label: 'OSINT', icon: '◎' },
+  { to: '/research', label: 'Security Research', icon: '⌕' },
+  { to: '/alerts', label: 'Alerts', icon: '⚑' },
+  { to: '/analytics', label: 'Analytics', icon: '∿' },
+  { to: '/sources', label: 'Data Sources', icon: '☰' },
+  { to: '/settings', label: 'Settings', icon: '⚙' },
+];
+
+function Sidebar({ currentPath, navigate }) {
+  const { state, dispatch } = useApp();
+  const collapsed = state.sidebarCollapsed;
+  return (
+    <aside className={`hidden lg:flex flex-col shrink-0 border-r border-white/5 bg-shadow-900/60 backdrop-blur-xl transition-[width] duration-300 ${collapsed ? 'w-[72px]' : 'w-[260px]'}`} aria-label="Primary navigation">
+      <div className="h-16 flex items-center gap-3 px-4 border-b border-white/5">
+        <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-500 to-violet-500 flex items-center justify-center font-bold text-white shadow-glow-sm shrink-0">CS</div>
+        {!collapsed && <div className="min-w-0"><div className="text-sm font-semibold text-white truncate">Cyber Shadow</div><div className="text-[10px] text-cyan-400 tracking-widest">PRO</div></div>}
+      </div>
+      <nav className="flex-1 overflow-y-auto py-3 px-2">
+        {NAV_ITEMS.map(item => {
+          const active = item.end ? currentPath === item.to : currentPath.startsWith(item.to);
+          return (
+            <button key={item.to} onClick={() => navigate(item.to)} title={collapsed ? item.label : undefined} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all mb-0.5 border ${active ? 'bg-blue-500/10 text-white border-blue-500/20 shadow-glow-sm' : 'text-slate-400 hover:text-white hover:bg-white/5 border-transparent'}`}>
+              <span className="text-base w-5 text-center shrink-0" aria-hidden="true">{item.icon}</span>
+              {!collapsed && <span className="truncate">{item.label}</span>}
+            </button>
+          );
+        })}
+      </nav>
+      <button onClick={() => dispatch({ type: 'TOGGLE_SIDEBAR' })} className="m-2 p-2 rounded-lg text-slate-500 hover:text-white hover:bg-white/5 text-xs" aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}>{collapsed ? '»' : '« Collapse'}</button>
+    </aside>
+  );
+}
+
+function Topbar({ navigate }) {
+  const { dispatch, state } = useApp();
+  const [query, setQuery] = useState('');
+  const [status, setStatus] = useState(null);
+  useEffect(() => { Sources.githubRateLimit().then(r => setStatus(r.data)).catch(() => {}); }, []);
+  function submit(e) { e.preventDefault(); if (query.trim().length >= 2) navigate(`/search?q=${encodeURIComponent(query.trim())}`); }
+  const shodanOk = !!state.preferences.shodanApiKey;
+  return (
+    <header className="h-16 shrink-0 border-b border-white/5 bg-shadow-900/50 backdrop-blur-xl flex items-center gap-3 px-4 lg:px-6">
+      <button className="lg:hidden p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/5" onClick={() => dispatch({ type: 'OPEN_COMMAND' })} aria-label="Open command palette">⌘</button>
+      <form onSubmit={submit} className="flex-1 max-w-xl relative">
+        <input type="search" value={query} onChange={e => setQuery(e.target.value)} placeholder="Search CVEs, repos, news… (Ctrl+K)" className="input" style={{ paddingLeft: '34px' }} aria-label="Global search" />
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm" aria-hidden="true">⌕</span>
+      </form>
+      <div className="hidden md:flex items-center gap-2 text-xs">
+        <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/5" title="GitHub rate limit">
+          <span className={`w-1.5 h-1.5 rounded-full ${status ? 'bg-emerald-400' : 'bg-slate-600'}`} />
+          <span className="text-slate-400">GH {status ? `${status.rate?.remaining ?? '?'}/${status.rate?.limit ?? '?'}` : '…'}</span>
+        </span>
+        <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/5" title={shodanOk ? 'Shodan key configured' : 'Shodan key not set'}>
+          <span className={`w-1.5 h-1.5 rounded-full ${shodanOk ? 'bg-emerald-400' : 'bg-amber-400'}`} />
+          <span className="text-slate-400">Shodan</span>
+        </span>
+        <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/5" title="NVD">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+          <span className="text-slate-400">NVD</span>
+        </span>
+      </div>
+      <button onClick={() => dispatch({ type: 'OPEN_COMMAND' })} className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg border border-white/10 text-xs text-slate-400 hover:text-white hover:border-blue-500/30 transition-colors" aria-label="Open command palette (Ctrl+K)">⌘K</button>
+    </header>
+  );
+}
+
+function MobileNav({ currentPath, navigate }) {
+  const items = [
+    { to: '/', label: 'Home', icon: '▦', end: true },
+    { to: '/vulnerabilities', label: 'Vulns', icon: '⚠' },
+    { to: '/shodan', label: 'Shodan', icon: '◉' },
+    { to: '/tools', label: 'Tools', icon: '⚒' },
+    { to: '/news', label: 'News', icon: '▤' },
+  ];
+  return (
+    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-30 h-16 bg-shadow-900/95 backdrop-blur-xl border-t border-white/10 flex items-stretch" aria-label="Mobile navigation" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+      {items.map(item => {
+        const active = item.end ? currentPath === item.to : currentPath.startsWith(item.to);
+        return (
+          <button key={item.to} onClick={() => navigate(item.to)} className={`flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] transition-colors ${active ? 'text-cyan-400' : 'text-slate-500'}`}>
+            <span className="text-lg" aria-hidden="true">{item.icon}</span>{item.label}
+          </button>
+        );
+      })}
+    </nav>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   COMMAND PALETTE
+   ═══════════════════════════════════════════════════════════════════════ */
+
+function CommandPalette({ navigate }) {
+  const { state, dispatch } = useApp();
+  const [query, setQuery] = useState('');
+  const [selected, setSelected] = useState(0);
+  const inputRef = useRef(null);
+  const open = state.commandOpen;
+
+  useEffect(() => {
+    function onKey(e) {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); dispatch({ type: open ? 'CLOSE_COMMAND' : 'OPEN_COMMAND' }); }
+      if (e.key === 'Escape' && open) dispatch({ type: 'CLOSE_COMMAND' });
+      if (e.key === '/' && !open && !['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName)) { e.preventDefault(); dispatch({ type: 'OPEN_COMMAND' }); }
+    }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open, dispatch]);
+
+  useEffect(() => { if (open) { setQuery(''); setSelected(0); setTimeout(() => inputRef.current?.focus(), 50); } }, [open]);
+
+  const items = NAV_ITEMS.filter(a => a.label.toLowerCase().includes(query.toLowerCase()));
+  function choose(item) { navigate(item.to); dispatch({ type: 'CLOSE_COMMAND' }); }
+  function onKeyDown(e) {
+    if (e.key === 'ArrowDown') { e.preventDefault(); setSelected(s => Math.min(s + 1, items.length - 1)); }
+    if (e.key === 'ArrowUp') { e.preventDefault(); setSelected(s => Math.max(s - 1, 0)); }
+    if (e.key === 'Enter' && items[selected]) { e.preventDefault(); choose(items[selected]); }
+  }
+
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-[10vh] px-4" role="dialog" aria-modal="true" aria-label="Command palette">
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => dispatch({ type: 'CLOSE_COMMAND' })} />
+      <div className="relative w-full max-w-2xl card overflow-hidden animate-slide-up">
+        <div className="flex items-center gap-3 px-4 py-3 border-b border-white/5">
+          <span className="text-slate-500">⌕</span>
+          <input ref={inputRef} value={query} onChange={e => { setQuery(e.target.value); setSelected(0); }} onKeyDown={onKeyDown} placeholder="Search or jump to…" className="flex-1 bg-transparent outline-none text-slate-100 placeholder-slate-500 text-sm" />
+          <kbd className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-slate-500 border border-white/10">ESC</kbd>
+        </div>
+        <ul className="max-h-[60vh] overflow-y-auto py-2" role="listbox">
+          {items.length === 0 && <li className="px-4 py-6 text-sm text-slate-500 text-center">No results.</li>}
+          {items.map((item, i) => (
+            <li key={item.to} role="option" aria-selected={i === selected} onMouseEnter={() => setSelected(i)} onClick={() => choose(item)} className={`px-4 py-2.5 cursor-pointer flex items-center justify-between gap-3 text-sm ${i === selected ? 'bg-blue-500/10 text-white' : 'text-slate-300 hover:bg-white/5'}`}>
+              <span className="flex items-center gap-2"><span className="text-slate-500">{item.icon}</span>{item.label}</span>
+              <span className="text-[10px] uppercase tracking-wider text-slate-500">Navigate</span>
+            </li>
+          ))}
+        </ul>
+        <div className="px-4 py-2 border-t border-white/5 text-[10px] text-slate-500 flex items-center gap-3">
+          <span>↑↓ navigate</span><span>↵ select</span><span>esc close</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   TOASTS
+   ═══════════════════════════════════════════════════════════════════════ */
+
+function ToastHost() {
+  const { state, dispatch } = useApp();
+  useEffect(() => {
+    if (!state.toasts.length) return;
+    const timers = state.toasts.map(t => setTimeout(() => dispatch({ type: 'REMOVE_TOAST', id: t.id }), t.duration || 4000));
+    return () => timers.forEach(clearTimeout);
+  }, [state.toasts, dispatch]);
+  const colors = { success:'bg-emerald-500/15 border-emerald-500/30 text-emerald-200', error:'bg-rose-500/15 border-rose-500/30 text-rose-200', warning:'bg-amber-500/15 border-amber-500/30 text-amber-200', info:'bg-sky-500/15 border-sky-500/30 text-sky-200' };
+  return (
+    <div className="fixed bottom-20 lg:bottom-6 right-4 z-50 flex flex-col gap-2 max-w-sm" role="region" aria-live="polite">
+      {state.toasts.map(t => (
+        <div key={t.id} className={`card px-4 py-3 border text-sm animate-slide-up ${colors[t.type] || colors.info}`}>
+          <div className="flex items-start gap-2"><span className="flex-1">{t.message}</span><button onClick={() => dispatch({ type: 'REMOVE_TOAST', id: t.id })} className="opacity-60 hover:opacity-100" aria-label="Dismiss">×</button></div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SHODAN MODULE (fully functional)
+   ═══════════════════════════════════════════════════════════════════════ */
+
+function ShodanPage() {
+  const { state, toast } = useApp();
+  const apiKey = state.preferences.shodanApiKey;
+  const [mode, setMode] = useState('internetdb'); // internetdb | host | search | apiinfo
+  const [target, setTarget] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState(null);
+
+  /* ── Free InternetDB lookup (no key) ────────────────────────── */
+  async function lookupInternetDb() {
+    if (!target.trim()) return;
+    setLoading(true); setError(null); setResult(null);
+    try {
+      const r = await Sources.shodanInternetDB(target.trim());
+      setResult({ type: 'internetdb', data: r.data, _prov: r._provenance });
+      toast('InternetDB lookup complete', 'success', 2500);
+    } catch (e) { setError(e); }
+    finally { setLoading(false); }
+  }
+
+  /* ── Full Shodan Host lookup (requires key) ─────────────────── */
+  async function lookupHost() {
+    if (!apiKey) return setError(new ApiError('AUTH_REQUIRED', 'Shodan API key required. Add it in Settings.', 401));
+    if (!target.trim()) return;
+    setLoading(true); setError(null); setResult(null);
+    try {
+      const r = await Sources.shodanHost(target.trim(), apiKey);
+      setResult({ type: 'host', data: r.data, _prov: r._provenance });
+      toast('Shodan host lookup complete', 'success', 2500);
+    } catch (e) { setError(e); }
+    finally { setLoading(false); }
+  }
+
+  /* ── Shodan Search (requires key) ───────────────────────────── */
+  async function runSearch() {
+    if (!apiKey) return setError(new ApiError('AUTH_REQUIRED', 'Shodan API key required. Add it in Settings.', 401));
+    if (!searchQuery.trim()) return;
+    setLoading(true); setError(null); setResult(null);
+    try {
+      const r = await Sources.shodanSearch(searchQuery.trim(), apiKey, 1);
+      setResult({ type: 'search', data: r.data, _prov: r._provenance });
+      toast(`Found ${r.data?.total || 0} results`, 'success', 2500);
+    } catch (e) { setError(e); }
+    finally { setLoading(false); }
+  }
+
+  /* ── API Info (requires key) ────────────────────────────────── */
+  async function loadApiInfo() {
+    if (!apiKey) return setError(new ApiError('AUTH_REQUIRED', 'Shodan API key required.', 401));
+    setLoading(true); setError(null); setResult(null);
+    try {
+      const r = await Sources.shodanApiInfo(apiKey);
+      setResult({ type: 'apiinfo', data: r.data, _prov: r._provenance });
+    } catch (e) { setError(e); }
+    finally { setLoading(false); }
+  }
+
+  return (
+    <div className="space-y-5">
+      <div className="card p-6">
+        <div className="flex items-start justify-between gap-4 flex-wrap">
+          <div>
+            <h1 className="text-2xl font-semibold text-white">Shodan Intelligence</h1>
+            <p className="text-sm text-slate-400 mt-1">Internet-wide asset visibility. Free InternetDB lookup works without any key.</p>
+          </div>
+          <SourceBadge status={apiKey ? 'LIVE' : 'SERVER'} source={apiKey ? 'Full API' : 'InternetDB (free)'} />
+        </div>
+      </div>
+
+      {/* Status banner */}
+      {apiKey ? (
+        <div className="card p-4 border-emerald-500/20 bg-emerald-500/5">
+          <div className="flex items-center gap-3">
+            <span className="text-emerald-400 text-lg">✓</span>
+            <div className="flex-1">
+              <div className="text-sm font-medium text-emerald-200">Shodan API key configured</div>
+              <div className="text-xs text-emerald-300/70 mt-0.5">Host lookup, search, and API info are available. Key stored locally in your browser only.</div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="card p-4 border-amber-500/20 bg-amber-500/5">
+          <div className="flex items-start gap-3">
+            <span className="text-amber-400 text-lg">⚡</span>
+            <div className="flex-1">
+              <div className="text-sm font-medium text-amber-200">Free InternetDB mode active</div>
+              <div className="text-xs text-amber-300/70 mt-0.5">
+                IP lookups use Shodan's free InternetDB API (no key required). For full host details, search, and API info, add a Shodan API key in <strong>Settings</strong>.
+                <a href="https://account.shodan.io" target="_blank" rel="noopener noreferrer" className="underline ml-1">Get a key →</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Mode tabs */}
+      <div className="card p-2 flex flex-wrap gap-1">
+        {[
+          { id: 'internetdb', label: '🌐 InternetDB (Free)' },
+          { id: 'host', label: '🔍 Host Lookup', needsKey: true },
+          { id: 'search', label: '🔎 Search', needsKey: true },
+          { id: 'apiinfo', label: '📊 API Info', needsKey: true },
+        ].map(m => (
+          <button
+            key={m.id}
+            onClick={() => { setMode(m.id); setResult(null); setError(null); }}
+            disabled={m.needsKey && !apiKey}
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${mode === m.id ? 'bg-blue-500/15 text-blue-200 border border-blue-500/30' : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'} disabled:opacity-40 disabled:cursor-not-allowed`}
+          >
+            {m.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Input panels */}
+      <div className="card p-5 space-y-4">
+        {mode === 'internetdb' && (
+          <>
+            <label className="block">
+              <span className="text-xs uppercase tracking-wider text-slate-500">IPv4 address (no key needed)</span>
+              <input value={target} onChange={e => setTarget(e.target.value)} placeholder="8.8.8.8" className="input mt-1.5 mono" onKeyDown={e => e.key === 'Enter' && lookupInternetDb()} />
+            </label>
+            <button onClick={lookupInternetDb} disabled={loading || !target.trim()} className="btn-primary w-full md:w-auto">{loading ? 'Looking up…' : 'Lookup InternetDB'}</button>
+            <div className="text-xs text-slate-500">Returns open ports, hostnames, CPEs, tags, and known vulnerabilities — no API key required.</div>
+          </>
+        )}
+
+        {mode === 'host' && (
+          <>
+            <label className="block">
+              <span className="text-xs uppercase tracking-wider text-slate-500">IPv4 / IPv6 address</span>
+              <input value={target} onChange={e => setTarget(e.target.value)} placeholder="8.8.8.8" className="input mt-1.5 mono" onKeyDown={e => e.key === 'Enter' && lookupHost()} />
+            </label>
+            <button onClick={lookupHost} disabled={loading || !target.trim()} className="btn-primary w-full md:w-auto">{loading ? 'Fetching host…' : 'Full Host Lookup'}</button>
+            <div className="text-xs text-slate-500">Returns organization, ASN, ISP, country, city, open services, banners, and CPEs from the official Shodan API.</div>
+          </>
+        )}
+
+        {mode === 'search' && (
+          <>
+            <label className="block">
+              <span className="text-xs uppercase tracking-wider text-slate-500">Search query</span>
+              <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder='e.g. country:US port:443 product:nginx' className="input mt-1.5 mono" onKeyDown={e => e.key === 'Enter' && runSearch()} />
+            </label>
+            <div className="flex flex-wrap gap-1.5">
+              {['country:US','port:443','product:nginx','http.title:admin','org:"Amazon"','hostname:example.com','os:"Windows"','has_vuln:true'].map(t => (
+                <button key={t} onClick={() => setSearchQuery(t)} className="text-[11px] px-2 py-1 rounded border border-white/10 text-slate-400 hover:text-white hover:border-blue-500/30 transition-colors mono">{t}</button>
+              ))}
+            </div>
+            <button onClick={runSearch} disabled={loading || !searchQuery.trim()} className="btn-primary w-full md:w-auto">{loading ? 'Searching…' : 'Search Shodan'}</button>
+            <div className="text-xs text-slate-500">Supported filters: hostname, org, net, country, port, product, http.title, os, asn, has_vuln.</div>
+          </>
+        )}
+
+        {mode === 'apiinfo' && (
+          <>
+            <button onClick={loadApiInfo} disabled={loading} className="btn-primary">{loading ? 'Loading…' : 'Load API Account Info'}</button>
+            <div className="text-xs text-slate-500">Shows your Shodan plan, query credits, scan credits, and monitored IPs.</div>
+          </>
+        )}
+      </div>
+
+      {/* Error */}
+      {error && <ErrorCard error={error} onRetry={() => { setError(null); }} />}
+
+      {/* Results */}
+      {loading && <DataCard title="Loading Shodan data…" loading={true} />}
+
+      {result && !loading && (
+        <ShodanResult result={result} />
+      )}
+
+      {/* Documentation */}
+      <DataCard title="About Shodan Data" subtitle="Provenance and limitations" icon="◈">
+        <div className="space-y-3 text-sm text-slate-400">
+          <div className="flex items-start gap-3">
+            <SourceBadge status="LIVE" source="Shodan" />
+            <span>Data retrieved directly from Shodan's API. All fields are provided by Shodan — nothing is simulated.</span>
+          </div>
+          <div className="flex items-start gap-3">
+            <SourceBadge status="CACHED" source="InternetDB" />
+            <span>Free InternetDB results are cached for 15 minutes in your browser to reduce API load.</span>
+          </div>
+          <p className="pt-3 border-t border-white/5 text-xs">
+            <strong className="text-slate-300">Free tier:</strong> InternetDB (no key) returns ports, hostnames, CPEs, tags, and known vulnerabilities for any IPv4 address.
+            Full host lookup, search, and API info require a Shodan API key.
+            <a href="https://developer.shodan.io/api" target="_blank" rel="noopener noreferrer" className="underline ml-1">API docs →</a>
+          </p>
+          <p className="text-xs text-amber-300/80">
+            ⚠ This module is for defensive intelligence only. Do not use Shodan results to attack, scan, or access systems without explicit authorization.
+          </p>
+        </div>
+      </DataCard>
+    </div>
+  );
+}
+
+function ShodanResult({ result }) {
+  const { type, data, _prov } = result;
+
+  if (type === 'internetdb') {
+    return (
+      <DataCard title="InternetDB Result" subtitle={`Free lookup · ${_prov?.retrieved_at ? new Date(_prov.retrieved_at).toLocaleString() : ''}`} icon="🌐" actions={<SourceBadge status={_prov?.status || 'LIVE'} source="Shodan InternetDB" retrievedAt={_prov?.retrieved_at} />}>
+        {data && data.ip ? (
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <InfoBox label="IP" value={data.ip} mono />
+              <InfoBox label="Open Ports" value={(data.ports || []).length} />
+              <InfoBox label="Hostnames" value={(data.hostnames || []).length} />
+              <InfoBox label="Vulnerabilities" value={(data.vulns || []).length} highlight={data.vulns?.length > 0 ? 'rose' : 'emerald'} />
+            </div>
+            {data.ports?.length > 0 && (
+              <div>
+                <div className="text-xs uppercase tracking-wider text-slate-500 mb-2">Open Ports</div>
+                <div className="flex flex-wrap gap-1.5">{data.ports.map(p => <span key={p} className="mono text-xs px-2 py-1 rounded bg-blue-500/10 border border-blue-500/20 text-blue-300">{p}</span>)}</div>
+              </div>
+            )}
+            {data.hostnames?.length > 0 && (
+              <div>
+                <div className="text-xs uppercase tracking-wider text-slate-500 mb-2">Hostnames</div>
+                <div className="flex flex-wrap gap-1.5">{data.hostnames.map(h => <span key={h} className="mono text-xs px-2 py-1 rounded bg-white/5 border border-white/10 text-slate-300">{h}</span>)}</div>
+              </div>
+            )}
+            {data.cpes?.length > 0 && (
+              <div>
+                <div className="text-xs uppercase tracking-wider text-slate-500 mb-2">CPEs</div>
+                <div className="flex flex-wrap gap-1.5">{data.cpes.map(c => <span key={c} className="mono text-[10px] px-2 py-1 rounded bg-violet-500/10 border border-violet-500/20 text-violet-300">{c}</span>)}</div>
+              </div>
+            )}
+            {data.tags?.length > 0 && (
+              <div>
+                <div className="text-xs uppercase tracking-wider text-slate-500 mb-2">Tags</div>
+                <div className="flex flex-wrap gap-1.5">{data.tags.map(t => <span key={t} className="text-xs px-2 py-1 rounded bg-amber-500/10 border border-amber-500/20 text-amber-300">{t}</span>)}</div>
+              </div>
+            )}
+            {data.vulns?.length > 0 && (
+              <div>
+                <div className="text-xs uppercase tracking-wider text-slate-500 mb-2">Known Vulnerabilities</div>
+                <div className="flex flex-wrap gap-1.5">{data.vulns.map(v => <a key={v} href={`https://nvd.nist.gov/vuln/detail/${v}`} target="_blank" rel="noopener noreferrer" className="mono text-[10px] px-2 py-1 rounded bg-rose-500/10 border border-rose-500/20 text-rose-300 hover:bg-rose-500/20">{v}</a>)}</div>
+              </div>
+            )}
+          </div>
+        ) : <EmptyState title="No data returned" message="The IP may not be indexed in Shodan's InternetDB." />}
+      </DataCard>
+    );
+  }
+
+  if (type === 'host') {
+    return (
+      <DataCard title="Host Details" subtitle={data?.ip_str || ''} icon="🔍" actions={<SourceBadge status={_prov?.status || 'LIVE'} source="Shodan" retrievedAt={_prov?.retrieved_at} />}>
+        {data ? (
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <InfoBox label="IP" value={data.ip_str} mono />
+              <InfoBox label="Organization" value={data.org || '—'} />
+              <InfoBox label="ISP" value={data.isp || '—'} />
+              <InfoBox label="ASN" value={data.asn || '—'} mono />
+              <InfoBox label="Country" value={data.country_name || '—'} />
+              <InfoBox label="City" value={data.city || '—'} />
+              <InfoBox label="OS" value={data.os || '—'} />
+              <InfoBox label="Last Update" value={data.last_update ? new Date(data.last_update).toLocaleString() : '—'} />
+            </div>
+            {data.hostnames?.length > 0 && (
+              <div>
+                <div className="text-xs uppercase tracking-wider text-slate-500 mb-2">Hostnames</div>
+                <div className="flex flex-wrap gap-1.5">{data.hostnames.map(h => <span key={h} className="mono text-xs px-2 py-1 rounded bg-white/5 border border-white/10 text-slate-300">{h}</span>)}</div>
+              </div>
+            )}
+            {data.ports?.length > 0 && (
+              <div>
+                <div className="text-xs uppercase tracking-wider text-slate-500 mb-2">Open Ports ({data.ports.length})</div>
+                <div className="flex flex-wrap gap-1.5">{data.ports.map(p => <span key={p} className="mono text-xs px-2 py-1 rounded bg-blue-500/10 border border-blue-500/20 text-blue-300">{p}</span>)}</div>
+              </div>
+            )}
+            {data.data?.length > 0 && (
+              <div>
+                <div className="text-xs uppercase tracking-wider text-slate-500 mb-2">Services ({data.data.length})</div>
+                <div className="space-y-2 max-h-96 overflow-y-auto">
+                  {data.data.map((svc, i) => (
+                    <div key={i} className="border border-white/5 rounded-lg p-3">
+                      <div className="flex items-center justify-between gap-3 mb-2">
+                        <span className="mono text-xs text-cyan-400">{svc.port}/{svc.transport || 'tcp'}</span>
+                        {svc.product && <span className="text-xs text-slate-400">{svc.product} {svc.version || ''}</span>}
+                      </div>
+                      {svc.data && <pre className="mono text-[10px] text-slate-500 bg-black/30 rounded p-2 overflow-auto max-h-24 whitespace-pre-wrap">{svc.data.slice(0, 500)}</pre>}
+                      {svc.cpe?.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-2">{svc.cpe.map(c => <span key={c} className="mono text-[9px] px-1.5 py-0.5 rounded bg-violet-500/10 text-violet-300">{c}</span>)}</div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        ) : <EmptyState title="No host data" />}
+      </DataCard>
+    );
+  }
+
+  if (type === 'search') {
+    return (
+      <DataCard title="Search Results" subtitle={`${data?.total?.toLocaleString() || 0} total matches`} icon="🔎" actions={<SourceBadge status={_prov?.status || 'LIVE'} source="Shodan" retrievedAt={_prov?.retrieved_at} />}>
+        {data?.matches?.length > 0 ? (
+          <div className="space-y-3 max-h-[600px] overflow-y-auto">
+            {data.matches.map((m, i) => (
+              <div key={i} className="border border-white/5 rounded-lg p-3 hover:border-blue-500/20 transition-colors">
+                <div className="flex items-start justify-between gap-3 mb-2">
+                  <div className="mono text-xs text-cyan-400">{m.ip_str}{m.port ? `:${m.port}` : ''}</div>
+                  {m.location?.country_name && <span className="text-xs text-slate-500">{m.location.country_name}</span>}
+                </div>
+                {m.org && <div className="text-xs text-slate-400">{m.org}</div>}
+                {m.product && <div className="text-xs text-slate-500 mt-1">{m.product} {m.version || ''}</div>}
+                {m.data && <pre className="mono text-[10px] text-slate-500 bg-black/30 rounded p-2 mt-2 overflow-auto max-h-24 whitespace-pre-wrap">{m.data.slice(0, 400)}</pre>}
+                {m.vulns && Object.keys(m.vulns).length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-2">{Object.keys(m.vulns).slice(0, 8).map(v => <span key={v} className="mono text-[9px] px-1.5 py-0.5 rounded bg-rose-500/10 text-rose-300">{v}</span>)}</div>
+                )}
+              </div>
+            ))}
+          </div>
+        ) : <EmptyState title="No results" message="Try a different query or check your API plan limits." />}
+      </DataCard>
+    );
+  }
+
+  if (type === 'apiinfo') {
+    return (
+      <DataCard title="Shodan Account Info" icon="📊" actions={<SourceBadge status={_prov?.status || 'LIVE'} source="Shodan" retrievedAt={_prov?.retrieved_at} />}>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <InfoBox label="Plan" value={data?.plan || '—'} />
+          <InfoBox label="Query Credits" value={data?.query_credits ?? '—'} />
+          <InfoBox label="Scan Credits" value={data?.scan_credits ?? '—'} />
+          <InfoBox label="Monitored IPs" value={data?.monitored_ips ?? '—'} />
+        </div>
+      </DataCard>
+    );
+  }
+
+  return <EmptyState />;
+}
+
+function InfoBox({ label, value, mono, highlight }) {
+  const color = highlight === 'rose' ? 'text-rose-400' : highlight === 'emerald' ? 'text-emerald-400' : 'text-slate-200';
+  return (
+    <div className="border border-white/5 rounded-lg p-3">
+      <div className="text-[10px] uppercase tracking-wider text-slate-500">{label}</div>
+      <div className={`text-sm mt-1 ${mono ? 'mono' : ''} ${color} break-all`}>{value}</div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   DASHBOARD
+   ═══════════════════════════════════════════════════════════════════════ */
+
+function Dashboard({ navigate }) {
+  const kev = useApi(() => Sources.kev(), []);
+  const nvd = useApi(() => Sources.nvdSearch({ resultsPerPage: 20 }), []);
+  const repoData = useApi(() => Sources.githubRepos({ q: 'topic:security stars:>2000', per_page: 6 }), []);
+  const { state } = useApp();
+
+  const kevList = kev.data?.data?.vulnerabilities || [];
+  const nvdList = nvd.data?.data?.vulnerabilities || [];
+  const repoList = repoData.data?.data?.items || [];
+
+  const severityCounts = useMemo(() => {
+    const c = { CRITICAL:0, HIGH:0, MEDIUM:0, LOW:0, UNKNOWN:0 };
+    nvdList.forEach(v => {
+      const m = v.cve.metrics;
+      const sev = (m?.cvssMetricV31?.[0] || m?.cvssMetricV30?.[0] || m?.cvssMetricV2?.[0])?.cvssData?.baseSeverity || 'UNKNOWN';
+      c[sev.toUpperCase()] = (c[sev.toUpperCase()] || 0) + 1;
+    });
+    return c;
+  }, [nvdList]);
+
+  const ransomwareKev = kevList.filter(v => v.knownRansomwareCampaignUse === 'Known').length;
+  const shodanReady = !!state.preferences.shodanApiKey;
+
+  return (
+    <div className="space-y-5">
+      <div className="card p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold text-white">Security Operations Dashboard</h1>
+          <p className="text-sm text-slate-400 mt-1">Live defensive intelligence from NVD, CISA KEV, GitHub, and Shodan. All data labeled with retrieval status.</p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <SourceBadge status="LIVE" source="NVD" retrievedAt={nvd.lastUpdated} />
+          <SourceBadge status="LIVE" source="CISA KEV" retrievedAt={kev.lastUpdated} />
+          <SourceBadge status="LIVE" source="GitHub" retrievedAt={repoData.lastUpdated} />
+          <SourceBadge status={shodanReady ? 'LIVE' : 'SERVER'} source="Shodan" />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <Stat label="Recent CVEs" value={nvd.loading ? '—' : (nvd.data?.data?.totalResults || 0).toLocaleString()} hint="NVD · live sample" tone="accent" />
+        <Stat label="Known Exploited" value={kev.loading ? '—' : kevList.length.toLocaleString()} hint="CISA KEV catalog" tone="critical" />
+        <Stat label="Ransomware-linked" value={kev.loading ? '—' : ransomwareKev} hint="KEV · ransomware campaigns" tone="warning" />
+        <Stat label="Security Repos" value={repoData.loading ? '—' : (repoData.data?.data?.total_count || 0).toLocaleString()} hint="GitHub · topic:security" tone="good" />
+      </div>
+
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
+        <div className="xl:col-span-2">
+          <DataCard
+            title="Recent CVEs from NVD"
+            subtitle={nvd.lastUpdated ? `Retrieved ${new Date(nvd.lastUpdated).toLocaleString()}` : 'Fetching…'}
+            icon="⚠"
+            loading={nvd.loading}
+            error={nvd.error}
+            onRetry={nvd.refetch}
+            empty={!nvdList.length}
+            actions={<SourceBadge status="LIVE" source="NVD" />}
+          >
+            <div className="overflow-x-auto -mx-5">
+              <table className="w-full text-sm table-hover">
+                <thead>
+                  <tr className="text-left text-xs uppercase tracking-wider text-slate-500 border-b border-white/5">
+                    <th className="px-5 py-2">CVE</th>
+                    <th className="px-3 py-2">Severity</th>
+                    <th className="px-3 py-2 hidden md:table-cell">Description</th>
+                    <th className="px-3 py-2 hidden lg:table-cell">Published</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {nvdList.slice(0, 12).map(v => {
+                    const m = v.cve.metrics;
+                    const primary = m?.cvssMetricV31?.[0] || m?.cvssMetricV30?.[0] || m?.cvssMetricV2?.[0];
+                    const desc = (v.cve.descriptions || []).find(d => d.lang === 'en')?.value || '';
+                    return (
+                      <tr key={v.cve.id} className="border-b border-white/5 cursor-pointer" onClick={() => navigate(`/vulnerabilities?cve=${v.cve.id}`)}>
+                        <td className="px-5 py-2.5 mono text-xs text-cyan-400 whitespace-nowrap">{v.cve.id}</td>
+                        <td className="px-3 py-2.5"><SeverityBadge severity={primary?.cvssData?.baseSeverity} /></td>
+                        <td className="px-3 py-2.5 hidden md:table-cell text-slate-400 text-xs max-w-md truncate-2">{desc}</td>
+                        <td className="px-3 py-2.5 hidden lg:table-cell text-slate-500 text-xs whitespace-nowrap">{v.cve.published ? new Date(v.cve.published).toLocaleDateString() : '—'}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </DataCard>
+        </div>
+
+        <div className="space-y-4">
+          <DataCard title="Severity Distribution" subtitle="From current NVD sample" icon="∿" loading={nvd.loading} empty={!nvdList.length}>
+            <div className="space-y-2">
+              {Object.entries(severityCounts).map(([sev, count]) => {
+                const total = Object.values(severityCounts).reduce((a, b) => a + b, 0) || 1;
+                const pct = (count / total) * 100;
+                return (
+                  <div key={sev}>
+                    <div className="flex items-center justify-between text-xs mb-1">
+                      <SeverityBadge severity={sev} />
+                      <span className="text-slate-400">{count}</span>
+                    </div>
+                    <div className="h-1.5 rounded-full bg-white/5 overflow-hidden">
+                      <div className="h-full rounded-full" style={{ width: `${pct}%`, background: { CRITICAL:'#dc2626', HIGH:'#f97316', MEDIUM:'#eab308', LOW:'#22c55e', UNKNOWN:'#64748b' }[sev] }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </DataCard>
+
+          <DataCard title="Top Security Repositories" subtitle="GitHub · topic:security" icon="⌥" loading={repoData.loading} error={repoData.error} onRetry={repoData.refetch} empty={!repoList.length}>
+            <ul className="space-y-2.5">
+              {repoList.map(r => (
+                <li key={r.id} className="flex items-start justify-between gap-3 text-sm">
+                  <a href={r.html_url} target="_blank" rel="noopener noreferrer" className="min-w-0 flex-1 group">
+                    <div className="font-medium text-slate-200 group-hover:text-cyan-400 truncate">{r.full_name}</div>
+                    <div className="text-xs text-slate-500 truncate-2">{r.description || 'No description'}</div>
+                  </a>
+                  <div className="text-xs text-amber-400 shrink-0">★ {r.stargazers_count.toLocaleString()}</div>
+                </li>
+              ))}
+            </ul>
+          </DataCard>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <DataCard title="Latest Known Exploited Vulnerabilities" subtitle="CISA KEV · Ransomware-aware" icon="⚑" loading={kev.loading} error={kev.error} onRetry={kev.refetch} empty={!kevList.length} actions={<SourceBadge status="LIVE" source="CISA KEV" />}>
+          <ul className="space-y-3 max-h-96 overflow-y-auto">
+            {kevList.slice(-10).reverse().map(v => (
+              <li key={v.cveID} className="border border-white/5 rounded-lg p-3 hover:border-blue-500/20 transition-colors">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="mono text-xs text-cyan-400">{v.cveID}</div>
+                    <div className="text-sm text-slate-200 mt-1 font-medium truncate-2">{v.vulnerabilityName}</div>
+                    <div className="text-xs text-slate-500 mt-1">{v.vendorProject} · {v.product}</div>
+                  </div>
+                  {v.knownRansomwareCampaignUse === 'Known' && <span className="badge sev-critical shrink-0">Ransomware</span>}
+                </div>
+                <div className="text-xs text-slate-500 mt-2">Added: {v.dateAdded}</div>
+              </li>
+            ))}
+          </ul>
+        </DataCard>
+
+        <DataCard title="Data Provenance" subtitle="Honest labeling — no fabricated data" icon="◈">
+          <div className="space-y-3 text-sm text-slate-400">
+            <div className="flex items-start gap-3"><SourceBadge status="LIVE" /><span>Fetched directly from the source API during this session.</span></div>
+            <div className="flex items-start gap-3"><SourceBadge status="CACHED" /><span>Served from an in-browser cache to respect upstream rate limits.</span></div>
+            <div className="flex items-start gap-3"><SourceBadge status="SERVER" /><span>Requires server-side integration (Shodan full API).</span></div>
+            <p className="pt-3 border-t border-white/5 text-xs">
+              <strong className="text-slate-300">Active sources:</strong> NVD, CISA KEV, GitHub, Shodan InternetDB (free) / Shodan API (key required).
+            </p>
+          </div>
+        </DataCard>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   VULNERABILITIES
+   ═══════════════════════════════════════════════════════════════════════ */
+
+function Vulnerabilities({ searchParams, navigate }) {
+  const [tab, setTab] = useState('nvd');
+  const [keyword, setKeyword] = useState(searchParams.get('cve') || '');
+  const [page, setPage] = useState(1);
+  const [severityFilter, setSeverityFilter] = useState('ALL');
+  const debouncedKeyword = useDebounce(keyword, 400);
+
+  const nvd = useApi(() => Sources.nvdSearch({ keyword: debouncedKeyword, resultsPerPage: 40, startIndex: (page - 1) * 40 }), [debouncedKeyword, page]);
+  const kev = useApi(() => Sources.kev(), []);
+
+  const items = nvd.data?.data?.vulnerabilities || [];
+  const kevItems = kev.data?.data?.vulnerabilities || [];
+
+  const filteredNvd = useMemo(() => {
+    if (severityFilter === 'ALL') return items;
+    return items.filter(v => {
+      const m = v.cve.metrics;
+      const sev = (m?.cvssMetricV31?.[0] || m?.cvssMetricV30?.[0] || m?.cvssMetricV2?.[0])?.cvssData?.baseSeverity;
+      return (sev || 'UNKNOWN').toUpperCase() === severityFilter;
+    });
+  }, [items, severityFilter]);
+
+  return (
+    <div className="space-y-5">
+      <div className="card p-6">
+        <h1 className="text-2xl font-semibold text-white">Vulnerability Intelligence</h1>
+        <p className="text-sm text-slate-400 mt-1">Search NVD, CISA KEV, and OSV.dev. Every record shows its source.</p>
+      </div>
+
+      <div className="flex gap-2 border-b border-white/5">
+        {[{id:'nvd',label:'NVD'},{id:'kev',label:'CISA KEV'},{id:'osv',label:'OSV.dev'}].map(t => (
+          <button key={t.id} onClick={() => setTab(t.id)} className={`px-4 py-2 text-sm border-b-2 -mb-px transition-colors ${tab === t.id ? 'border-cyan-400 text-white' : 'border-transparent text-slate-500 hover:text-slate-300'}`}>{t.label}</button>
+        ))}
+      </div>
+
+      {tab === 'nvd' && (
+        <div className="space-y-4">
+          <div className="card p-4 flex flex-col md:flex-row gap-3">
+            <input value={keyword} onChange={e => { setKeyword(e.target.value); setPage(1); }} placeholder="Search CVE ID, keyword, product…" className="input flex-1" />
+            <select value={severityFilter} onChange={e => setSeverityFilter(e.target.value)} className="input md:w-48">
+              <option value="ALL">All severities</option>
+              <option value="CRITICAL">Critical</option>
+              <option value="HIGH">High</option>
+              <option value="MEDIUM">Medium</option>
+              <option value="LOW">Low</option>
+            </select>
+          </div>
+
+          <DataCard title="NVD Results" subtitle={`${nvd.data?.data?.totalResults?.toLocaleString() || 0} results · page ${page}`} loading={nvd.loading} error={nvd.error} onRetry={nvd.refetch} empty={!filteredNvd.length} actions={<SourceBadge status="LIVE" source="NVD" retrievedAt={nvd.lastUpdated} />}>
+            <div className="space-y-3">
+              {filteredNvd.map(v => {
+                const m = v.cve.metrics;
+                const primary = m?.cvssMetricV31?.[0] || m?.cvssMetricV30?.[0] || m?.cvssMetricV2?.[0];
+                const desc = (v.cve.descriptions || []).find(d => d.lang === 'en')?.value || '';
+                return (
+                  <div key={v.cve.id} className="border border-white/5 rounded-lg p-4 hover:border-blue-500/20 transition-colors">
+                    <div className="flex items-start justify-between gap-3 mb-2">
+                      <a href={`https://nvd.nist.gov/vuln/detail/${v.cve.id}`} target="_blank" rel="noopener noreferrer" className="mono text-sm text-cyan-400 hover:underline">{v.cve.id}</a>
+                      <div className="flex items-center gap-2 shrink-0">
+                        {primary?.cvssData?.baseScore && <span className="text-xs font-semibold text-slate-300">{primary.cvssData.baseScore}</span>}
+                        <SeverityBadge severity={primary?.cvssData?.baseSeverity} />
+                      </div>
+                    </div>
+                    <p className="text-sm text-slate-300 truncate-3">{desc}</p>
+                    <div className="flex flex-wrap gap-3 mt-3 text-xs text-slate-500">
+                      <span>Published: {v.cve.published ? new Date(v.cve.published).toLocaleDateString() : '—'}</span>
+                      <span>Modified: {v.cve.lastModified ? new Date(v.cve.lastModified).toLocaleDateString() : '—'}</span>
+                      <span>Source: NVD</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="flex items-center justify-between mt-4 pt-3 border-t border-white/5">
+              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="btn-ghost text-xs">← Prev</button>
+              <span className="text-xs text-slate-500">Page {page}</span>
+              <button onClick={() => setPage(p => p + 1)} disabled={!nvd.data?.data || nvd.data.data.startIndex + nvd.data.data.resultsPerPage >= nvd.data.data.totalResults} className="btn-ghost text-xs">Next →</button>
+            </div>
+          </DataCard>
+        </div>
+      )}
+
+      {tab === 'kev' && (
+        <DataCard title="CISA Known Exploited Vulnerabilities" subtitle={`${kevItems.length} entries`} loading={kev.loading} error={kev.error} onRetry={kev.refetch} empty={!kevItems.length} actions={<SourceBadge status="LIVE" source="CISA KEV" retrievedAt={kev.lastUpdated} />}>
+          <div className="overflow-x-auto -mx-5">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-left text-xs uppercase text-slate-500 border-b border-white/5">
+                  <th className="px-5 py-2">CVE</th>
+                  <th className="px-3 py-2">Vendor / Product</th>
+                  <th className="px-3 py-2 hidden md:table-cell">Name</th>
+                  <th className="px-3 py-2">Added</th>
+                  <th className="px-3 py-2">Ransomware</th>
+                </tr>
+              </thead>
+              <tbody>
+                {kevItems.slice(-100).reverse().map(v => (
+                  <tr key={v.cveID} className="border-b border-white/5 table-row-hover">
+                    <td className="px-5 py-2.5 mono text-xs text-cyan-400 whitespace-nowrap">{v.cveID}</td>
+                    <td className="px-3 py-2.5 text-xs text-slate-300">{v.vendorProject} · {v.product}</td>
+                    <td className="px-3 py-2.5 hidden md:table-cell text-xs text-slate-400 max-w-md truncate">{v.vulnerabilityName}</td>
+                    <td className="px-3 py-2.5 text-xs text-slate-500 whitespace-nowrap">{v.dateAdded}</td>
+                    <td className="px-3 py-2.5">{v.knownRansomwareCampaignUse === 'Known' ? <span className="badge sev-critical">Yes</span> : <span className="text-xs text-slate-500">—</span>}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </DataCard>
+      )}
+
+      {tab === 'osv' && <OsvPanel />}
+    </div>
+  );
+}
+
+function OsvPanel() {
+  const [ecosystem, setEcosystem] = useState('npm');
+  const [name, setName] = useState('');
+  const [version, setVersion] = useState('');
+  const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  async function submit(e) {
+    e.preventDefault();
+    if (!name.trim()) return;
+    setLoading(true); setError(null);
+    try {
+      const body = { package: { name: name.trim(), ecosystem } };
+      if (version.trim()) body.version = version.trim();
+      setResult(await Sources.osvQuery(body));
+    } catch (e) { setError(e); setResult(null); }
+    finally { setLoading(false); }
+  }
+
+  const vulns = result?.data?.vulns || [];
+
+  return (
+    <div className="space-y-4">
+      <form onSubmit={submit} className="card p-4 flex flex-col md:flex-row gap-3">
+        <select value={ecosystem} onChange={e => setEcosystem(e.target.value)} className="input md:w-40">
+          {['npm','PyPI','Go','Maven','NuGet','RubyGems','crates.io','Packagist'].map(e => <option key={e}>{e}</option>)}
+        </select>
+        <input value={name} onChange={e => setName(e.target.value)} placeholder="Package name (e.g. lodash)" className="input flex-1" />
+        <input value={version} onChange={e => setVersion(e.target.value)} placeholder="Version (optional)" className="input md:w-40" />
+        <button type="submit" disabled={loading || !name.trim()} className="btn-primary">{loading ? 'Querying…' : 'Query OSV'}</button>
+      </form>
+
+      <DataCard title="OSV.dev Results" subtitle={result ? `${vulns.length} vulnerabilities for ${name}` : 'Enter a package'} loading={loading} error={error} empty={result && !vulns.length} actions={<SourceBadge status="LIVE" source="OSV.dev" retrievedAt={result?._provenance?.retrieved_at} />}>
+        {result && vulns.length > 0 && (
+          <div className="space-y-3">
+            {vulns.map(v => (
+              <div key={v.id} className="border border-white/5 rounded-lg p-4">
+                <div className="flex items-start justify-between gap-3 mb-2">
+                  <a href={`https://osv.dev/vulnerability/${v.id}`} target="_blank" rel="noopener noreferrer" className="mono text-sm text-cyan-400 hover:underline">{v.id}</a>
+                  {v.aliases?.length > 0 && <span className="text-xs text-slate-500">{v.aliases.slice(0, 2).join(', ')}</span>}
+                </div>
+                {v.summary && <p className="text-sm text-slate-300 font-medium">{v.summary}</p>}
+                {v.details && <p className="text-xs text-slate-400 mt-2 truncate-3">{v.details}</p>}
+                <div className="text-xs text-slate-500 mt-3">Published: {v.published ? new Date(v.published).toLocaleDateString() : '—'}</div>
+              </div>
+            ))}
+          </div>
+        )}
+      </DataCard>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   GITHUB
+   ═══════════════════════════════════════════════════════════════════════ */
+
+function GitHubIntel() {
+  const [query, setQuery] = useState('topic:security stars:>1000');
+  const [sort, setSort] = useState('stars');
+  const [page, setPage] = useState(1);
+  const debouncedQuery = useDebounce(query, 400);
+  const data = useApi(() => Sources.githubRepos({ q: debouncedQuery, sort, page, per_page: 20 }), [debouncedQuery, sort, page]);
+
+  const repos = data.data?.data?.items || [];
+  const total = data.data?.data?.total_count || 0;
+
+  return (
+    <div className="space-y-5">
+      <div className="card p-6">
+        <h1 className="text-2xl font-semibold text-white">GitHub Security Intelligence</h1>
+        <p className="text-sm text-slate-400 mt-1">Discover security-focused repositories, tools, and research.</p>
+      </div>
+
+      <div className="card p-4 flex flex-col md:flex-row gap-3">
+        <input value={query} onChange={e => { setQuery(e.target.value); setPage(1); }} placeholder="GitHub search query" className="input flex-1" />
+        <select value={sort} onChange={e => setSort(e.target.value)} className="input md:w-40">
+          <option value="stars">Most stars</option>
+          <option value="updated">Recently updated</option>
+          <option value="forks">Most forks</option>
+        </select>
+      </div>
+
+      <div className="flex flex-wrap gap-1.5">
+        {['topic:security','topic:infosec','topic:cybersecurity','topic:threat-intelligence','topic:siem','topic:osint','topic:dfir','topic:devsecops','topic:malware-analysis','topic:reverse-engineering'].map(t => (
+          <button key={t} onClick={() => { setQuery(t); setPage(1); }} className="text-[11px] px-2 py-1 rounded border border-white/10 text-slate-400 hover:text-white hover:border-blue-500/30 transition-colors mono">{t}</button>
+        ))}
+      </div>
+
+      <DataCard title="Repositories" subtitle={`${total.toLocaleString()} total · page ${page}`} loading={data.loading} error={data.error} onRetry={data.refetch} empty={!repos.length} actions={<SourceBadge status="LIVE" source="GitHub" retrievedAt={data.lastUpdated} />}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {repos.map(r => (
+            <a key={r.id} href={r.html_url} target="_blank" rel="noopener noreferrer" className="border border-white/5 rounded-lg p-4 hover:border-blue-500/30 transition-colors group">
+              <div className="flex items-start justify-between gap-3 mb-2">
+                <div className="text-sm font-medium text-slate-200 group-hover:text-cyan-400 truncate">{r.full_name}</div>
+                {r.language && <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-slate-400 shrink-0">{r.language}</span>}
+              </div>
+              <p className="text-xs text-slate-500 truncate-2 min-h-[32px]">{r.description || 'No description'}</p>
+              <div className="flex items-center gap-3 mt-3 text-xs text-slate-500">
+                <span className="text-amber-400">★ {r.stargazers_count.toLocaleString()}</span>
+                <span>⑂ {r.forks_count.toLocaleString()}</span>
+                {r.topics?.slice(0, 2).map(t => <span key={t} className="px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-300">{t}</span>)}
+              </div>
+            </a>
+          ))}
+        </div>
+        <div className="flex items-center justify-between mt-4 pt-3 border-t border-white/5">
+          <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="btn-ghost text-xs">← Prev</button>
+          <span className="text-xs text-slate-500">Page {page}</span>
+          <button onClick={() => setPage(p => p + 1)} disabled={repos.length < 20} className="btn-ghost text-xs">Next →</button>
+        </div>
+      </DataCard>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   NEWS
+   ═══════════════════════════════════════════════════════════════════════ */
+
+const RSS_FEEDS = [
+  { name: 'The Hacker News', url: 'https://feeds.feedburner.com/TheHackersNews', category: 'News' },
+  { name: 'Bleeping Computer', url: 'https://www.bleepingcomputer.com/feed/', category: 'News' },
+  { name: 'Krebs on Security', url: 'https://krebsonsecurity.com/feed/', category: 'Research' },
+  { name: 'Dark Reading', url: 'https://www.darkreading.com/rss.xml', category: 'News' },
+  { name: 'SecurityWeek', url: 'https://www.securityweek.com/feed/', category: 'News' },
+  { name: 'SANS ISC', url: 'https://isc.sans.edu/rssfeed.xml', category: 'Research' },
+  { name: 'CISA Advisories', url: 'https://www.cisa.gov/cybersecurity-advisories/all.xml', category: 'Advisories' },
+];
+
+function News() {
+  const [feedIdx, setFeedIdx] = useState(0);
+  const [query, setQuery] = useState('');
+  const feed = RSS_FEEDS[feedIdx];
+  const data = useApi(() => Sources.news(feed.url), [feedIdx]);
+
+  const items = useMemo(() => {
+    const all = data.data?.data?.items || [];
+    if (!query) return all;
+    const q = query.toLowerCase();
+    return all.filter(i => (i.title || '').toLowerCase().includes(q) || (i.description || '').toLowerCase().includes(q));
+  }, [data.data, query]);
+
+  return (
+    <div className="space-y-5">
+      <div className="card p-6">
+        <h1 className="text-2xl font-semibold text-white">Security News</h1>
+        <p className="text-sm text-slate-400 mt-1">Aggregated via RSS. Each article links to its original source.</p>
+      </div>
+
+      <div className="card p-4 flex flex-col md:flex-row gap-3">
+        <select value={feedIdx} onChange={e => setFeedIdx(parseInt(e.target.value, 10))} className="input md:w-64">
+          {RSS_FEEDS.map((f, i) => <option key={f.url} value={i}>{f.name}</option>)}
+        </select>
+        <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Filter titles…" className="input flex-1" />
+      </div>
+
+      <DataCard title={feed.name} subtitle={`${items.length} articles · CORS bridge`} loading={data.loading} error={data.error} onRetry={data.refetch} empty={!items.length} actions={<SourceBadge status="CACHED" source={feed.name} retrievedAt={data.lastUpdated} />}>
+        <ul className="divide-y divide-white/5">
+          {items.slice(0, 40).map((a, i) => (
+            <li key={i} className="py-3">
+              <a href={a.link} target="_blank" rel="noopener noreferrer" className="block group">
+                <div className="text-sm font-medium text-slate-200 group-hover:text-cyan-400 truncate-2">{a.title}</div>
+                {a.description && <p className="text-xs text-slate-500 mt-1 truncate-2" dangerouslySetInnerHTML={{ __html: a.description.replace(/<[^>]+>/g, ' ').slice(0, 200) }} />}
+                <div className="text-xs text-slate-500 mt-1.5">{a.pubDate ? new Date(a.pubDate).toLocaleString() : '—'}</div>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </DataCard>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   THREAT MAP
+   ═══════════════════════════════════════════════════════════════════════ */
+
+function ThreatMap() {
+  const kev = useApi(() => Sources.kev(), []);
+  const kevItems = kev.data?.data?.vulnerabilities || [];
+
+  const heat = useMemo(() => {
+    const map = {};
+    kevItems.forEach(v => { const k = v.vendorProject || 'Unknown'; map[k] = (map[k] || 0) + 1; });
+    return Object.entries(map).sort((a, b) => b[1] - a[1]).slice(0, 25);
+  }, [kevItems]);
+  const max = Math.max(...heat.map(h => h[1]), 1);
+
+  return (
+    <div className="space-y-5">
+      <div className="card p-6">
+        <h1 className="text-2xl font-semibold text-white">Global Threat Activity</h1>
+        <p className="text-sm text-slate-400 mt-1">Vendor-level exploitation trends from CISA's Known Exploited Vulnerabilities catalog.</p>
+      </div>
+
+      <div className="card p-5">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-sm font-semibold text-slate-200">Known-Exploited Distribution by Vendor</h2>
+          <SourceBadge status="LIVE" source="CISA KEV" retrievedAt={kev.lastUpdated} />
+        </div>
+        {kev.loading ? <Loading /> : kev.error ? <ErrorCard error={kev.error} onRetry={kev.refetch} /> : heat.length === 0 ? <EmptyState /> : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {heat.map(([vendor, count]) => {
+              const pct = (count / max) * 100;
+              return (
+                <div key={vendor} className="border border-white/5 rounded-lg p-3 hover:border-blue-500/20 transition-colors">
+                  <div className="flex items-center justify-between mb-2"><span className="text-sm text-slate-200 truncate pr-2">{vendor}</span><span className="text-xs text-slate-500">{count}</span></div>
+                  <div className="h-1.5 rounded-full bg-white/5 overflow-hidden"><div className="h-full bg-gradient-to-r from-cyan-500 to-blue-500" style={{ width: `${pct}%` }} /></div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+        <div className="mt-4 text-xs text-slate-500">Country-level geographic attribution is not available from CISA KEV. This distribution reflects vendor/software origin. All numbers reflect the actual KEV catalog — nothing is simulated.</div>
+      </div>
+
+      <DataCard title="Recent KEV Additions" subtitle="Latest 20 entries" icon="⚑" loading={kev.loading} error={kev.error} onRetry={kev.refetch} empty={!kevItems.length}>
+        <div className="overflow-x-auto -mx-5">
+          <table className="w-full text-sm">
+            <thead><tr className="text-left text-xs uppercase text-slate-500 border-b border-white/5"><th className="px-5 py-2">CVE</th><th className="px-3 py-2">Vendor</th><th className="px-3 py-2">Product</th><th className="px-3 py-2">Added</th><th className="px-3 py-2">Due</th></tr></thead>
+            <tbody>
+              {kevItems.slice(-20).reverse().map(v => (
+                <tr key={v.cveID} className="border-b border-white/5">
+                  <td className="px-5 py-2.5 mono text-xs text-cyan-400">{v.cveID}</td>
+                  <td className="px-3 py-2.5 text-xs text-slate-300">{v.vendorProject}</td>
+                  <td className="px-3 py-2.5 text-xs text-slate-400">{v.product}</td>
+                  <td className="px-3 py-2.5 text-xs text-slate-500">{v.dateAdded}</td>
+                  <td className="px-3 py-2.5 text-xs text-slate-500">{v.dueDate}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </DataCard>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   TOOLS (expanded)
+   ═══════════════════════════════════════════════════════════════════════ */
+
+function Tools() {
+  const [tool, setTool] = useState('cidr');
+  const groups = {
+    'Network': ['cidr','ip','dns','whois','headers','crtsh'],
+    'AppSec': ['jwt','base64','urlenc','urlparse'],
+    'Crypto': ['hash','filehash','uuid'],
+    'Defensive': ['json','ioc','logparse','diff','password'],
+  };
+  const labels = {
+    cidr:'CIDR Calculator', ip:'IP Lookup', dns:'DNS Lookup', whois:'WHOIS / RDAP', headers:'Security Headers', crtsh:'Certificate Transparency',
+    jwt:'JWT Decoder', base64:'Base64 / URL-safe', urlenc:'URL Encode', urlparse:'URL Parser',
+    hash:'Hash Calculator', filehash:'File Hash', uuid:'UUID / Token Generator',
+    json:'JSON Formatter', ioc:'IOC Extractor', logparse:'Log Analyzer', diff:'Text Diff', password:'Password Strength',
+  };
+
+  return (
+    <div className="space-y-5">
+      <div className="card p-6">
+        <h1 className="text-2xl font-semibold text-white">Security Tools</h1>
+        <p className="text-sm text-slate-400 mt-1">Defensive utilities — all local operations run in your browser unless a remote lookup is explicitly requested.</p>
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+        <aside className="card p-3 lg:col-span-1">
+          {Object.entries(groups).map(([group, ids]) => (
+            <div key={group} className="mb-3">
+              <div className="text-[10px] uppercase tracking-wider text-slate-500 px-2 mb-1">{group}</div>
+              {ids.map(id => (
+                <button key={id} onClick={() => setTool(id)} className={`w-full text-left px-2.5 py-2 rounded-lg text-sm mb-0.5 ${tool === id ? 'bg-blue-500/10 text-white' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}>{labels[id]}</button>
+              ))}
+            </div>
+          ))}
+        </aside>
+        <div className="lg:col-span-3">
+          {tool === 'cidr' && <CidrTool />}
+          {tool === 'ip' && <IpTool />}
+          {tool === 'dns' && <DnsTool />}
+          {tool === 'whois' && <WhoisTool />}
+          {tool === 'headers' && <HeadersTool />}
+          {tool === 'crtsh' && <CrtshTool />}
+          {tool === 'jwt' && <JwtTool />}
+          {tool === 'base64' && <Base64Tool />}
+          {tool === 'urlenc' && <UrlEncTool />}
+          {tool === 'urlparse' && <UrlParseTool />}
+          {tool === 'hash' && <HashTool />}
+          {tool === 'filehash' && <FileHashTool />}
+          {tool === 'uuid' && <UuidTool />}
+          {tool === 'json' && <JsonTool />}
+          {tool === 'ioc' && <IocTool />}
+          {tool === 'logparse' && <LogParseTool />}
+          {tool === 'diff' && <DiffTool />}
+          {tool === 'password' && <PasswordTool />}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CidrTool() {
+  const [cidr, setCidr] = useState('192.168.1.0/24');
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState(null);
+  function compute() {
+    setError(null); setResult(null);
+    const m = cidr.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})\/(\d{1,2})$/);
+    if (!m) return setError('Format: 192.168.1.0/24');
+    const o = [m[1],m[2],m[3],m[4]].map(x => parseInt(x, 10));
+    if (o.some(x => x < 0 || x > 255)) return setError('Each octet must be 0–255');
+    const prefix = parseInt(m[5], 10);
+    if (prefix < 0 || prefix > 32) return setError('Prefix must be 0–32');
+    const ip = o.reduce((a, x) => ((a << 8) | x) >>> 0, 0);
+    const mask = prefix === 0 ? 0 : (0xFFFFFFFF << (32 - prefix)) >>> 0;
+    const network = (ip & mask) >>> 0, broadcast = (network | (~mask >>> 0)) >>> 0;
+    const total = Math.pow(2, 32 - prefix), usable = prefix >= 31 ? total : total - 2;
+    const toIp = n => [(n>>>24)&255,(n>>>16)&255,(n>>>8)&255,n&255].join('.');
+    setResult({ network: toIp(network), broadcast: toIp(broadcast), netmask: toIp(mask), wildcard: toIp(~mask >>> 0), first: prefix >= 31 ? toIp(network) : toIp(network + 1), last: prefix >= 31 ? toIp(broadcast) : toIp(broadcast - 1), total, usable, prefix });
+  }
+  return (
+    <div className="card p-5 space-y-4">
+      <div className="flex gap-2"><input value={cidr} onChange={e => setCidr(e.target.value)} className="input mono flex-1" /><button onClick={compute} className="btn-primary">Compute</button></div>
+      {error && <ErrorCard error={{ message: error }} />}
+      {result && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {[['Network',result.network],['Broadcast',result.broadcast],['Netmask',result.netmask],['Wildcard',result.wildcard],['First host',result.first],['Last host',result.last]].map(([k,v]) => (
+            <div key={k} className="border border-white/5 rounded-lg p-3"><div className="text-[10px] uppercase tracking-wider text-slate-500">{k}</div><div className="mono text-sm text-cyan-400 mt-1">{v}</div></div>
+          ))}
+          <div className="border border-white/5 rounded-lg p-3 col-span-2"><div className="text-[10px] uppercase tracking-wider text-slate-500">Total addresses</div><div className="mono text-sm text-slate-200 mt-1">{result.total.toLocaleString()}</div></div>
+          <div className="border border-white/5 rounded-lg p-3 col-span-2"><div className="text-[10px] uppercase tracking-wider text-slate-500">Usable hosts</div><div className="mono text-sm text-emerald-400 mt-1">{result.usable.toLocaleString()}</div></div>
+        </div>
+      )}
+      <div className="text-xs text-slate-500">All computation is performed locally in your browser.</div>
+    </div>
+  );
+}
+
+function IpTool() {
+  const [ip, setIp] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState(null);
+  async function submit(e) {
+    e.preventDefault(); if (!ip.trim()) return;
+    setLoading(true); setError(null); setResult(null);
+    try { setResult(await Sources.ipLookup(ip.trim())); } catch (e) { setError(e); }
+    finally { setLoading(false); }
+  }
+  return (
+    <div className="card p-5 space-y-4">
+      <form onSubmit={submit} className="flex gap-2"><input value={ip} onChange={e => setIp(e.target.value)} placeholder="8.8.8.8" className="input mono flex-1" /><button type="submit" disabled={loading} className="btn-primary">{loading ? '…' : 'Lookup'}</button></form>
+      {error && <ErrorCard error={error} />}
+      {result && (<>
+        <div className="flex justify-end"><SourceBadge status="LIVE" source="ipapi.co" retrievedAt={result._provenance?.retrieved_at} /></div>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">{Object.entries(result.data || {}).map(([k,v]) => v === null || v === '' ? null : (
+          <div key={k} className="border border-white/5 rounded-lg p-3"><div className="text-[10px] uppercase tracking-wider text-slate-500">{k}</div><div className="mono text-xs text-slate-200 mt-1 break-all">{String(v)}</div></div>
+        ))}</div>
+      </>)}
+      <div className="text-xs text-slate-500">Lookup provided by ipapi.co. Public data only — no PII collected.</div>
+    </div>
+  );
+}
+
+function DnsTool() {
+  const [host, setHost] = useState('');
+  const [type, setType] = useState('A');
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState(null);
+  async function submit(e) {
+    e.preventDefault(); if (!host.trim()) return;
+    setLoading(true); setError(null); setResult(null);
+    try { setResult(await request(`https://dns.google/resolve?name=${encodeURIComponent(host.trim())}&type=${type}`, { ttl: 300 })); } catch (e) { setError(e); }
+    finally { setLoading(false); }
+  }
+  const answers = result?.data?.Answer || [];
+  return (
+    <div className="card p-5 space-y-4">
+      <form onSubmit={submit} className="flex flex-col md:flex-row gap-2">
+        <input value={host} onChange={e => setHost(e.target.value)} placeholder="example.com" className="input mono flex-1" />
+        <select value={type} onChange={e => setType(e.target.value)} className="input md:w-32">{['A','AAAA','MX','TXT','NS','CNAME','SOA','SRV','PTR','CAA'].map(t => <option key={t}>{t}</option>)}</select>
+        <button type="submit" disabled={loading} className="btn-primary">{loading ? '…' : 'Resolve'}</button>
+      </form>
+      {error && <ErrorCard error={error} />}
+      {result && (<>
+        <div className="flex justify-end"><SourceBadge status="LIVE" source="Google DNS" retrievedAt={result._provenance?.retrieved_at} /></div>
+        {answers.length === 0 ? <EmptyState title="No records returned" /> : (
+          <div className="space-y-2">{answers.map((a, i) => (
+            <div key={i} className="border border-white/5 rounded-lg p-3 flex items-start justify-between gap-3">
+              <span className="mono text-xs text-cyan-400 shrink-0">TYPE {a.type}</span>
+              <span className="mono text-xs text-slate-200 break-all flex-1">{a.data}</span>
+              <span className="text-xs text-slate-500 shrink-0">TTL {a.TTL}s</span>
+            </div>
+          ))}</div>
+        )}
+      </>)}
+      <div className="text-xs text-slate-500">Resolved via Google DNS-over-HTTPS (dns.google).</div>
+    </div>
+  );
+}
+
+function WhoisTool() {
+  const [query, setQuery] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState(null);
+  async function submit(e) {
+    e.preventDefault(); if (!query.trim()) return;
+    setLoading(true); setError(null); setResult(null);
+    try { setResult(await Sources.rdap(query.trim())); } catch (e) { setError(e); }
+    finally { setLoading(false); }
+  }
+  return (
+    <div className="card p-5 space-y-4">
+      <form onSubmit={submit} className="flex gap-2"><input value={query} onChange={e => setQuery(e.target.value)} placeholder="example.com or 8.8.8.8" className="input mono flex-1" /><button type="submit" disabled={loading} className="btn-primary">{loading ? '…' : 'Query RDAP'}</button></form>
+      {error && <ErrorCard error={error} />}
+      {result && (<>
+        <div className="flex justify-end"><SourceBadge status="LIVE" source="RDAP (rdap.org)" retrievedAt={result._provenance?.retrieved_at} /></div>
+        <pre className="mono text-xs bg-black/30 border border-white/5 rounded-lg p-3 overflow-auto max-h-96 whitespace-pre-wrap">{JSON.stringify(result.data, null, 2)}</pre>
+      </>)}
+      <div className="text-xs text-slate-500">Uses RDAP — the modern structured replacement for WHOIS.</div>
+    </div>
+  );
+}
+
+function HeadersTool() {
+  const [url, setUrl] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState(null);
+
+  async function analyze(e) {
+    e.preventDefault();
+    if (!url.trim()) return;
+    if (!/^https?:\/\//i.test(url)) return setError(new ApiError('INVALID_INPUT', 'URL must start with http:// or https://', 400));
+    setLoading(true); setError(null); setResult(null);
+    try {
+      const r = await Sources.securityHeaders(url.trim());
+      const headers = {};
+      if (r.data && typeof r.data === 'string') {
+        // We can't easily read headers via allorigins raw — show what we can
+        setResult({ note: 'Direct header inspection is limited by CORS. Use your browser DevTools Network tab for full header analysis.', _prov: r._provenance });
+      }
+      setResult({ data: r.data, _prov: r._provenance, note: 'Limited by browser CORS. For full header analysis, use the browser DevTools Network tab.' });
+    } catch (err) { setError(err); }
+    finally { setLoading(false); }
+  }
+
+  return (
+    <div className="card p-5 space-y-4">
+      <form onSubmit={analyze} className="flex gap-2">
+        <input value={url} onChange={e => setUrl(e.target.value)} placeholder="https://example.com" className="input mono flex-1" />
+        <button type="submit" disabled={loading} className="btn-primary">{loading ? '…' : 'Analyze'}</button>
+      </form>
+      {error && <ErrorCard error={error} />}
+      {result && (
+        <div className="space-y-3">
+          <div className="border border-amber-500/20 rounded-lg p-3 bg-amber-500/5 text-xs text-amber-200">
+            ⚠ Browser CORS restrictions limit direct HTTP header inspection. For complete analysis, use the Network tab in your browser's DevTools (F12 → Network → Headers).
+          </div>
+          <div className="text-xs text-slate-500">Recommended headers to check: Strict-Transport-Security, Content-Security-Policy, X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy, Cross-Origin-Opener-Policy.</div>
+        </div>
+      )}
+      <div className="text-xs text-slate-500">This tool uses a CORS proxy to attempt header retrieval. Results may be incomplete.</div>
+    </div>
+  );
+}
+
+function CrtshTool() {
+  const [domain, setDomain] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [certs, setCerts] = useState(null);
+  const [error, setError] = useState(null);
+
+  async function submit(e) {
+    e.preventDefault(); if (!domain.trim()) return;
+    setLoading(true); setError(null); setCerts(null);
+    try {
+      const r = await Sources.crtsh(domain.trim());
+      const seen = new Set();
+      const unique = (r.data || []).filter(c => {
+        const key = c.common_name + c.serial_number;
+        if (seen.has(key)) return false; seen.add(key); return true;
+      });
+      setCerts(unique);
+    } catch (err) { setError(err); }
+    finally { setLoading(false); }
+  }
+
+  return (
+    <div className="card p-5 space-y-4">
+      <form onSubmit={submit} className="flex gap-2">
+        <input value={domain} onChange={e => setDomain(e.target.value)} placeholder="example.com" className="input mono flex-1" />
+        <button type="submit" disabled={loading} className="btn-primary">{loading ? '…' : 'Search CT Logs'}</button>
+      </form>
+      {error && <ErrorCard error={error} />}
+      {certs && (
+        <DataCard title="Certificate Transparency Logs" subtitle={`${certs.length} unique certificates for ${domain}`} actions={<SourceBadge status="LIVE" source="crt.sh" />}>
+          <div className="space-y-2 max-h-96 overflow-y-auto">
+            {certs.slice(0, 50).map((c, i) => (
+              <div key={i} className="border border-white/5 rounded-lg p-3">
+                <div className="mono text-xs text-cyan-400">{c.common_name}</div>
+                <div className="flex flex-wrap gap-3 text-xs text-slate-500 mt-1">
+                  {c.issuer_name && <span>Issuer: {c.issuer_name}</span>}
+                  {c.not_before && <span>From: {new Date(c.not_before).toLocaleDateString()}</span>}
+                  {c.not_after && <span>To: {new Date(c.not_after).toLocaleDateString()}</span>}
+                </div>
+              </div>
+            ))}
+          </div>
+        </DataCard>
+      )}
+      <div className="text-xs text-slate-500">Queries crt.sh — a public Certificate Transparency log aggregator. Useful for subdomain discovery via certificate data.</div>
+    </div>
+  );
+}
+
+function JwtTool() {
+  const [token, setToken] = useState('');
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState(null);
+  function decode() {
+    setError(null); setResult(null);
+    const parts = token.trim().split('.');
+    if (parts.length !== 3) return setError('JWT must have exactly 3 parts.');
+    try {
+      const dec = p => JSON.parse(atob(p.replace(/-/g, '+').replace(/_/g, '/')));
+      setResult({ header: dec(parts[0]), payload: dec(parts[1]), signature: parts[2].slice(0, 24) + '…' });
+    } catch { setError('Failed to decode. Ensure the token is valid.'); }
+  }
+  return (
+    <div className="card p-5 space-y-4">
+      <textarea value={token} onChange={e => setToken(e.target.value)} placeholder="eyJhbGciOi…" className="input mono h-24" />
+      <button onClick={decode} className="btn-primary">Decode</button>
+      {error && <ErrorCard error={{ message: error }} />}
+      {result && (
+        <div className="space-y-3">
+          <div className="border border-amber-500/20 rounded-lg p-3 bg-amber-500/5 text-xs text-amber-200">⚠ Decoding is NOT verification. Signature has not been validated. Never paste production tokens.</div>
+          <div className="border border-white/5 rounded-lg p-3"><div className="text-xs text-slate-500 mb-1">Header</div><pre className="mono text-xs text-cyan-400 whitespace-pre-wrap">{JSON.stringify(result.header, null, 2)}</pre></div>
+          <div className="border border-white/5 rounded-lg p-3"><div className="text-xs text-slate-500 mb-1">Payload</div><pre className="mono text-xs text-emerald-400 whitespace-pre-wrap">{JSON.stringify(result.payload, null, 2)}</pre></div>
+          <div className="text-xs text-slate-500">Signature: {result.signature}</div>
+        </div>
+      )}
+      <div className="text-xs text-slate-500">All decoding happens locally in your browser. Nothing is sent to any server.</div>
+    </div>
+  );
+}
+
+function Base64Tool() {
+  const [input, setInput] = useState('');
+  const [output, setOutput] = useState('');
+  const [error, setError] = useState(null);
+  const [urlSafe, setUrlSafe] = useState(false);
+
+  function encode() {
+    try {
+      let enc = btoa(unescape(encodeURIComponent(input)));
+      if (urlSafe) enc = enc.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+      setOutput(enc); setError(null);
+    } catch (e) { setError(e.message); }
+  }
+  function decode() {
+    try {
+      let inp = input.trim();
+      if (urlSafe) inp = inp.replace(/-/g, '+').replace(/_/g, '/');
+      while (inp.length % 4) inp += '=';
+      setOutput(decodeURIComponent(escape(atob(inp)))); setError(null);
+    } catch { setError('Invalid Base64 input.'); }
+  }
+  return (
+    <div className="card p-5 space-y-4">
+      <textarea value={input} onChange={e => setInput(e.target.value)} placeholder="Enter text or Base64…" className="input mono h-32" />
+      <label className="flex items-center gap-2 text-sm text-slate-400"><input type="checkbox" checked={urlSafe} onChange={e => setUrlSafe(e.target.checked)} /> URL-safe Base64 (RFC 4648: replaces +/ with -_ and strips padding)</label>
+      <div className="flex gap-2"><button onClick={encode} className="btn-primary">Encode</button><button onClick={decode} className="btn-ghost">Decode</button><button onClick={() => navigator.clipboard.writeText(output)} disabled={!output} className="btn-ghost">Copy</button></div>
+      {error && <ErrorCard error={{ message: error }} />}
+      {output && <pre className="mono text-xs bg-black/30 border border-white/5 rounded-lg p-3 overflow-auto max-h-64 whitespace-pre-wrap break-all">{output}</pre>}
+      <div className="text-xs text-slate-500">Runs entirely in your browser.</div>
+    </div>
+  );
+}
+
+function UrlEncTool() {
+  const [input, setInput] = useState('');
+  const [output, setOutput] = useState('');
+  return (
+    <div className="card p-5 space-y-4">
+      <textarea value={input} onChange={e => setInput(e.target.value)} placeholder="Enter text or URL…" className="input mono h-24" />
+      <div className="flex gap-2 flex-wrap">
+        <button onClick={() => setOutput(encodeURIComponent(input))} className="btn-primary">Encode component</button>
+        <button onClick={() => setOutput(encodeURI(input))} className="btn-ghost">Encode URI</button>
+        <button onClick={() => { try { setOutput(decodeURIComponent(input)); } catch { setOutput('Invalid encoding'); } }} className="btn-ghost">Decode</button>
+        <button onClick={() => navigator.clipboard.writeText(output)} disabled={!output} className="btn-ghost">Copy</button>
+      </div>
+      {output && <pre className="mono text-xs bg-black/30 border border-white/5 rounded-lg p-3 overflow-auto max-h-64 whitespace-pre-wrap break-all">{output}</pre>}
+    </div>
+  );
+}
+
+function UrlParseTool() {
+  const [url, setUrl] = useState('');
+  const [parsed, setParsed] = useState(null);
+  const [error, setError] = useState(null);
+
+  function parse() {
+    setError(null); setParsed(null);
+    try {
+      const u = new URL(url);
+      setParsed({
+        protocol: u.protocol,
+        hostname: u.hostname,
+        port: u.port || '(default)',
+        pathname: u.pathname,
+        search: u.search || '(none)',
+        hash: u.hash || '(none)',
+        origin: u.origin,
+        params: Object.fromEntries(u.searchParams),
+        risks: [
+          u.protocol === 'http:' && '⚠ Insecure protocol (HTTP) — credentials may be transmitted in cleartext',
+          u.hostname.match(/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/) && '⚠ Hostname is a raw IP address — may bypass domain-based filtering',
+          u.username && '⚠ URL contains embedded credentials',
+          u.port && u.port !== '443' && u.port !== '80' && '⚠ Non-standard port',
+        ].filter(Boolean),
+      });
+    } catch (e) { setError('Invalid URL. Include scheme (http:// or https://).'); }
+  }
+
+  return (
+    <div className="card p-5 space-y-4">
+      <div className="flex gap-2"><input value={url} onChange={e => setUrl(e.target.value)} placeholder="https://user:pass@example.com:8443/path?q=1#frag" className="input mono flex-1" /><button onClick={parse} className="btn-primary">Parse</button></div>
+      {error && <ErrorCard error={{ message: error }} />}
+      {parsed && (
+        <div className="space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {Object.entries(parsed).filter(([k]) => !['params','risks'].includes(k)).map(([k,v]) => (
+              <div key={k} className="border border-white/5 rounded-lg p-3"><div className="text-[10px] uppercase tracking-wider text-slate-500">{k}</div><div className="mono text-xs text-cyan-400 mt-1 break-all">{v}</div></div>
+            ))}
+          </div>
+          {Object.keys(parsed.params).length > 0 && (
+            <div className="border border-white/5 rounded-lg p-3">
+              <div className="text-[10px] uppercase tracking-wider text-slate-500 mb-2">Query Parameters</div>
+              {Object.entries(parsed.params).map(([k,v]) => <div key={k} className="flex items-start gap-3 text-xs mb-1"><span className="mono text-cyan-400 shrink-0">{k}</span><span className="text-slate-300 break-all">{v}</span></div>)}
+            </div>
+          )}
+          {parsed.risks.length > 0 && (
+            <div className="border border-amber-500/20 rounded-lg p-3 bg-amber-500/5">
+              <div className="text-xs font-semibold text-amber-200 mb-1">Security Notes</div>
+              {parsed.risks.map((r, i) => <div key={i} className="text-xs text-amber-200/80">{r}</div>)}
+            </div>
+          )}
+        </div>
+      )}
+      <div className="text-xs text-slate-500">Uses the browser's native URL parser. All processing is local.</div>
+    </div>
+  );
+}
+
+function HashTool() {
+  const [input, setInput] = useState('');
+  const [hashes, setHashes] = useState({});
+  const [loading, setLoading] = useState(false);
+  async function compute() {
+    if (!input) return;
+    setLoading(true);
+    const enc = new TextEncoder().encode(input);
+    const algorithms = ['SHA-1','SHA-256','SHA-384','SHA-512'];
+    const results = {};
+    for (const alg of algorithms) {
+      const buf = await crypto.subtle.digest(alg, enc);
+      results[alg] = Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+    setHashes(results); setLoading(false);
+  }
+  return (
+    <div className="card p-5 space-y-4">
+      <textarea value={input} onChange={e => setInput(e.target.value)} placeholder="Enter text to hash…" className="input mono h-24" />
+      <button onClick={compute} disabled={loading || !input} className="btn-primary">{loading ? 'Computing…' : 'Compute Hashes'}</button>
+      {Object.keys(hashes).length > 0 && (
+        <div className="space-y-2">{Object.entries(hashes).map(([alg, h]) => (
+          <div key={alg} className="border border-white/5 rounded-lg p-3">
+            <div className="flex items-center justify-between mb-1"><span className="text-xs text-slate-500">{alg}</span><button onClick={() => navigator.clipboard.writeText(h)} className="text-xs text-slate-500 hover:text-cyan-400">Copy</button></div>
+            <div className="mono text-xs text-cyan-400 break-all">{h}</div>
+          </div>
+        ))}</div>
+      )}
+      <div className="text-xs text-slate-500">Uses Web Crypto API. All computation is local.</div>
+    </div>
+  );
+}
+
+function FileHashTool() {
+  const [hashes, setHashes] = useState({});
+  const [fileName, setFileName] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  async function handleFile(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setLoading(true); setError(null); setHashes({}); setFileName(file.name);
+    try {
+      const buf = await file.arrayBuffer();
+      const algorithms = ['SHA-1','SHA-256','SHA-384','SHA-512'];
+      const results = {};
+      for (const alg of algorithms) {
+        const hash = await crypto.subtle.digest(alg, buf);
+        results[alg] = Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+      }
+      setHashes(results);
+    } catch (e) { setError('Failed to read file: ' + e.message); }
+    finally { setLoading(false); }
+  }
+
+  return (
+    <div className="card p-5 space-y-4">
+      <label className="block">
+        <span className="text-xs uppercase tracking-wider text-slate-500">Select a file</span>
+        <input type="file" onChange={handleFile} className="input mt-1.5" />
+      </label>
+      {loading && <Loading />}
+      {error && <ErrorCard error={{ message: error }} />}
+      {fileName && !loading && (
+        <div className="space-y-2">
+          <div className="text-xs text-slate-400">File: <span className="mono text-slate-200">{fileName}</span></div>
+          {Object.entries(hashes).map(([alg, h]) => (
+            <div key={alg} className="border border-white/5 rounded-lg p-3">
+              <div className="flex items-center justify-between mb-1"><span className="text-xs text-slate-500">{alg}</span><button onClick={() => navigator.clipboard.writeText(h)} className="text-xs text-slate-500 hover:text-cyan-400">Copy</button></div>
+              <div className="mono text-xs text-cyan-400 break-all">{h}</div>
+            </div>
+          ))}
+        </div>
+      )}
+      <div className="text-xs text-slate-500">Files never leave your computer. All hashing happens locally via the Web Crypto API.</div>
+    </div>
+  );
+}
+
+function UuidTool() {
+  const [items, setItems] = useState([]);
+  const [length, setLength] = useState(32);
+  function genUuid() {
+    const u = crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { const r = Math.random()*16|0; return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16); });
+    setItems(prev => [{ type: 'UUID', value: u }, ...prev].slice(0, 20));
+  }
+  function genToken() {
+    const bytes = new Uint8Array(Math.ceil(length * 3 / 4));
+    crypto.getRandomValues(bytes);
+    const hex = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('').slice(0, length);
+    setItems(prev => [{ type: 'Token', value: hex }, ...prev].slice(0, 20));
+  }
+  return (
+    <div className="card p-5 space-y-4">
+      <div className="flex flex-col md:flex-row gap-2">
+        <button onClick={genUuid} className="btn-primary">Generate UUID v4</button>
+        <div className="flex gap-2 flex-1">
+          <input type="number" min="8" max="128" value={length} onChange={e => setLength(parseInt(e.target.value, 10) || 32)} className="input md:w-24" />
+          <button onClick={genToken} className="btn-primary flex-1">Generate Secure Token</button>
+        </div>
+      </div>
+      {items.length > 0 && (
+        <ul className="space-y-1.5">{items.map((it, i) => (
+          <li key={i} className="flex items-center justify-between gap-3 border border-white/5 rounded-lg px-3 py-2">
+            <span className="text-[10px] uppercase text-slate-500">{it.type}</span>
+            <code className="mono text-xs text-cyan-400 flex-1 break-all">{it.value}</code>
+            <button onClick={() => navigator.clipboard.writeText(it.value)} className="text-xs text-slate-500 hover:text-cyan-400">Copy</button>
+          </li>
+        ))}</ul>
+      )}
+      <div className="text-xs text-slate-500">Uses cryptographically secure randomness (crypto.getRandomValues / crypto.randomUUID).</div>
+    </div>
+  );
+}
+
+function JsonTool() {
+  const [input, setInput] = useState('');
+  const [error, setError] = useState(null);
+  const [output, setOutput] = useState('');
+  function format() { try { setOutput(JSON.stringify(JSON.parse(input), null, 2)); setError(null); } catch (e) { setError('Invalid JSON: ' + e.message); setOutput(''); } }
+  function minify() { try { setOutput(JSON.stringify(JSON.parse(input))); setError(null); } catch (e) { setError('Invalid JSON: ' + e.message); setOutput(''); } }
+  return (
+    <div className="card p-5 space-y-4">
+      <textarea value={input} onChange={e => setInput(e.target.value)} placeholder='{"key":"value"}' className="input mono h-40" />
+      <div className="flex gap-2"><button onClick={format} className="btn-primary">Format</button><button onClick={minify} className="btn-ghost">Minify</button><button onClick={() => navigator.clipboard.writeText(output)} disabled={!output} className="btn-ghost">Copy</button><button onClick={() => { setInput(''); setOutput(''); setError(null); }} className="btn-ghost">Clear</button></div>
+      {error && <ErrorCard error={{ message: error }} />}
+      {output && <pre className="mono text-xs bg-black/30 border border-white/5 rounded-lg p-3 overflow-auto max-h-96 whitespace-pre-wrap">{output}</pre>}
+    </div>
+  );
+}
+
+function IocTool() {
+  const [input, setInput] = useState('');
+  const [extracted, setExtracted] = useState(null);
+  const [error, setError] = useState(null);
+
+  const PATTERNS = {
+    ipv4: /\b(?:\d{1,3}\.){3}\d{1,3}\b/g,
+    domain: /\b(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}\b/g,
+    url: /https?:\/\/[^\s"'<>]+/g,
+    md5: /\b[a-fA-F0-9]{32}\b/g,
+    sha1: /\b[a-fA-F0-9]{40}\b/g,
+    sha256: /\b[a-fA-F0-9]{64}\b/g,
+    cve: /CVE-\d{4}-\d{4,}/gi,
+    email: /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g,
+    asn: /\bAS\d{1,6}\b/g,
+  };
+
+  function extract() {
+    setError(null); setExtracted(null);
+    if (!input.trim()) return;
+    const results = {};
+    for (const [type, re] of Object.entries(PATTERNS)) {
+      const m = input.match(re) || [];
+      const unique = [...new Set(m)];
+      if (unique.length) results[type] = unique;
+    }
+    setExtracted(results);
+  }
+
+  function defang(s) {
+    return s.replace(/http/g, 'hxxp').replace(/\./g, '[.]').replace(/@/g, '[@]');
+  }
+
+  return (
+    <div className="card p-5 space-y-4">
+      <textarea value={input} onChange={e => setInput(e.target.value)} placeholder="Paste text containing IOCs (IPs, domains, hashes, URLs…)…" className="input mono h-40" />
+      <div className="flex gap-2 flex-wrap">
+        <button onClick={extract} className="btn-primary">Extract IOCs</button>
+        <button onClick={() => { setInput(''); setExtracted(null); setError(null); }} className="btn-ghost">Clear</button>
+      </div>
+      {extracted && Object.keys(extracted).length === 0 && <EmptyState title="No IOCs found" message="No IPs, domains, URLs, hashes, CVEs, emails, or ASNs detected." />}
+      {extracted && Object.entries(extracted).map(([type, values]) => (
+        <div key={type} className="border border-white/5 rounded-lg p-3">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs uppercase tracking-wider text-slate-400">{type} ({values.length})</span>
+            <button onClick={() => navigator.clipboard.writeText(values.join('\n'))} className="text-xs text-slate-500 hover:text-cyan-400">Copy all</button>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {values.slice(0, 50).map(v => (
+              <span key={v} className="mono text-xs px-2 py-0.5 rounded bg-blue-500/10 border border-blue-500/20 text-blue-300 group relative">
+                {v}
+                <button onClick={() => navigator.clipboard.writeText(v)} className="ml-1 opacity-0 group-hover:opacity-100 text-slate-500 hover:text-cyan-400">⧉</button>
+              </span>
+            ))}
+            {values.length > 50 && <span className="text-xs text-slate-500">+{values.length - 50} more</span>}
+          </div>
+        </div>
+      ))}
+      <div className="text-xs text-slate-500">All extraction happens locally in your browser. Use defanging before sharing IOCs: <button onClick={() => input && setInput(defang(input))} className="underline text-cyan-400">defang current input</button>.</div>
+    </div>
+  );
+}
+
+function LogParseTool() {
+  const [log, setLog] = useState('');
+  const [filter, setFilter] = useState('');
+  const [levelFilter, setLevelFilter] = useState('ALL');
+  const [parsed, setParsed] = useState([]);
+
+  const LEVELS = ['ERROR','WARN','INFO','DEBUG','FATAL','TRACE'];
+
+  function parse() {
+    const lines = log.split('\n').filter(l => l.trim());
+    const results = lines.map(line => {
+      const level = LEVELS.find(l => line.toUpperCase().includes(l)) || 'UNKNOWN';
+      const timestamp = line.match(/\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}/)?.[0] || '';
+      const ip = line.match(/\b(?:\d{1,3}\.){3}\d{1,3}\b/)?.[0] || '';
+      return { raw: line, level, timestamp, ip };
+    });
+    setParsed(results);
+  }
+
+  const filtered = parsed.filter(p => {
+    if (levelFilter !== 'ALL' && p.level !== levelFilter) return false;
+    if (filter && !p.raw.toLowerCase().includes(filter.toLowerCase())) return false;
+    return true;
+  });
+
+  const counts = LEVELS.reduce((acc, l) => ({ ...acc, [l]: parsed.filter(p => p.level === l).length }), {});
+
+  return (
+    <div className="card p-5 space-y-4">
+      <textarea value={log} onChange={e => setLog(e.target.value)} placeholder="Paste log lines (one per line)…" className="input mono h-40" />
+      <div className="flex flex-col md:flex-row gap-3">
+        <input value={filter} onChange={e => setFilter(e.target.value)} placeholder="Text filter…" className="input flex-1" />
+        <select value={levelFilter} onChange={e => setLevelFilter(e.target.value)} className="input md:w-40">
+          <option value="ALL">All levels</option>
+          {LEVELS.map(l => <option key={l} value={l}>{l}</option>)}
+        </select>
+        <button onClick={parse} className="btn-primary">Parse</button>
+      </div>
+      {parsed.length > 0 && (
+        <>
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
+            {LEVELS.map(l => (
+              <div key={l} className="border border-white/5 rounded-lg p-2 text-center">
+                <div className={`text-[10px] uppercase ${l === 'ERROR' || l === 'FATAL' ? 'text-rose-400' : l === 'WARN' ? 'text-amber-400' : 'text-slate-500'}`}>{l}</div>
+                <div className="text-sm font-semibold text-slate-200">{counts[l] || 0}</div>
+              </div>
+            ))}
+          </div>
+          <div className="border border-white/5 rounded-lg overflow-hidden">
+            <div className="max-h-96 overflow-y-auto">
+              <table className="w-full text-xs">
+                <thead className="sticky top-0 bg-shadow-850">
+                  <tr className="text-left text-slate-500 border-b border-white/5">
+                    <th className="px-3 py-2">Level</th>
+                    <th className="px-3 py-2">Timestamp</th>
+                    <th className="px-3 py-2">IP</th>
+                    <th className="px-3 py-2">Line</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.slice(0, 200).map((p, i) => (
+                    <tr key={i} className="border-b border-white/5 table-row-hover">
+                      <td className="px-3 py-1.5"><span className={`badge ${p.level === 'ERROR' || p.level === 'FATAL' ? 'sev-critical' : p.level === 'WARN' ? 'sev-high' : 'sev-unknown'}`}>{p.level}</span></td>
+                      <td className="px-3 py-1.5 mono text-slate-500">{p.timestamp || '—'}</td>
+                      <td className="px-3 py-1.5 mono text-cyan-400">{p.ip || '—'}</td>
+                      <td className="px-3 py-1.5 mono text-slate-400 max-w-md truncate">{p.raw}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {filtered.length > 200 && <div className="px-3 py-2 text-xs text-slate-500 border-t border-white/5">Showing first 200 of {filtered.length} matching lines</div>}
+          </div>
+        </>
+      )}
+      <div className="text-xs text-slate-500">Simple client-side log parser. All processing is local.</div>
+    </div>
+  );
+}
+
+function DiffTool() {
+  const [a, setA] = useState('');
+  const [b, setB] = useState('');
+  const [result, setResult] = useState(null);
+
+  function compute() {
+    const la = a.split('\n'), lb = b.split('\n');
+    const max = Math.max(la.length, lb.length);
+    const lines = [];
+    for (let i = 0; i < max; i++) {
+      const x = la[i] ?? '', y = lb[i] ?? '';
+      if (x === y) lines.push({ type: 'same', a: x, b: y });
+      else if (!x) lines.push({ type: 'added', a: '', b: y });
+      else if (!y) lines.push({ type: 'removed', a: x, b: '' });
+      else lines.push({ type: 'changed', a: x, b: y });
+    }
+    setResult(lines);
+  }
+
+  const added = result?.filter(l => l.type === 'added').length || 0;
+  const removed = result?.filter(l => l.type === 'removed').length || 0;
+  const changed = result?.filter(l => l.type === 'changed').length || 0;
+
+  return (
+    <div className="card p-5 space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <label className="block"><span className="text-xs uppercase tracking-wider text-slate-500">Original</span><textarea value={a} onChange={e => setA(e.target.value)} className="input mono h-40 mt-1.5" /></label>
+        <label className="block"><span className="text-xs uppercase tracking-wider text-slate-500">Modified</span><textarea value={b} onChange={e => setB(e.target.value)} className="input mono h-40 mt-1.5" /></label>
+      </div>
+      <button onClick={compute} className="btn-primary">Compare</button>
+      {result && (
+        <>
+          <div className="flex gap-3 text-xs">
+            <span className="text-emerald-400">+{added} added</span>
+            <span className="text-rose-400">-{removed} removed</span>
+            <span className="text-amber-400">~{changed} changed</span>
+          </div>
+          <div className="border border-white/5 rounded-lg overflow-hidden max-h-96 overflow-y-auto">
+            {result.map((l, i) => (
+              <div key={i} className={`grid grid-cols-2 text-xs mono border-b border-white/5 ${l.type === 'added' ? 'bg-emerald-500/5' : l.type === 'removed' ? 'bg-rose-500/5' : l.type === 'changed' ? 'bg-amber-500/5' : ''}`}>
+                <div className={`px-3 py-1 border-r border-white/5 ${l.type === 'removed' || l.type === 'changed' ? 'text-rose-300' : 'text-slate-400'}`}>{l.a || ' '}</div>
+                <div className={`px-3 py-1 ${l.type === 'added' || l.type === 'changed' ? 'text-emerald-300' : 'text-slate-400'}`}>{l.b || ' '}</div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+      <div className="text-xs text-slate-500">Line-by-line comparison. Runs entirely in your browser.</div>
+    </div>
+  );
+}
+
+function PasswordTool() {
+  const [password, setPassword] = useState('');
+  const [result, setResult] = useState(null);
+
+  function estimate() {
+    if (!password) return setResult(null);
+    let pool = 0;
+    if (/[a-z]/.test(password)) pool += 26;
+    if (/[A-Z]/.test(password)) pool += 26;
+    if (/[0-9]/.test(password)) pool += 10;
+    if (/[^a-zA-Z0-9]/.test(password)) pool += 33;
+    const entropy = password.length * Math.log2(pool);
+    let score, label, color;
+    if (entropy < 28) { score = 0; label = 'Very Weak'; color = 'sev-critical'; }
+    else if (entropy < 36) { score = 1; label = 'Weak'; color = 'sev-high'; }
+    else if (entropy < 60) { score = 2; label = 'Fair'; color = 'sev-medium'; }
+    else if (entropy < 80) { score = 3; label = 'Strong'; color = 'sev-low'; }
+    else { score = 4; label = 'Very Strong'; color = 'badge-live'; }
+
+    const checks = [
+      { label: 'At least 12 characters', ok: password.length >= 12 },
+      { label: 'Contains lowercase', ok: /[a-z]/.test(password) },
+      { label: 'Contains uppercase', ok: /[A-Z]/.test(password) },
+      { label: 'Contains digit', ok: /[0-9]/.test(password) },
+      { label: 'Contains symbol', ok: /[^a-zA-Z0-9]/.test(password) },
+      { label: 'No common patterns', ok: !/(123|abc|qwerty|password|admin)/i.test(password) },
+    ];
+
+    setResult({ entropy, score, label, color, checks, guesses: Math.pow(2, entropy) });
+  }
+
+  return (
+    <div className="card p-5 space-y-4">
+      <input type="password" value={password} onChange={e => { setPassword(e.target.value); }} onKeyUp={estimate} placeholder="Enter password to analyze…" className="input mono" />
+      <button onClick={estimate} className="btn-primary">Analyze</button>
+      {result && (
+        <>
+          <div className={`badge ${result.color} text-sm px-3 py-1.5`}>{result.label} — ~{result.entropy.toFixed(0)} bits of entropy</div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            {result.checks.map((c, i) => (
+              <div key={i} className={`flex items-center gap-2 text-xs px-3 py-2 rounded-lg border ${c.ok ? 'border-emerald-500/20 bg-emerald-500/5 text-emerald-300' : 'border-rose-500/20 bg-rose-500/5 text-rose-300'}`}>
+                <span>{c.ok ? '✓' : '✗'}</span>{c.label}
+              </div>
+            ))}
+          </div>
+          <div className="text-xs text-slate-500">Estimated guesses to crack: ~2^{result.entropy.toFixed(0)}. This is a simplified local estimate — not a substitute for a full password auditor.</div>
+        </>
+      )}
+      <div className="text-xs text-slate-500">⚠ Never enter a real production password. This tool runs locally but browser extensions could still read it.</div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   THREAT INTEL / OSINT / RESEARCH / ALERTS / ANALYTICS / SOURCES / SETTINGS
+   (Same as before, with minor updates for Shodan key awareness)
+   ═══════════════════════════════════════════════════════════════════════ */
+
+function ThreatIntel() {
+  const kev = useApi(() => Sources.kev(), []);
+  const kevItems = kev.data?.data?.vulnerabilities || [];
+  const ransomware = kevItems.filter(v => v.knownRansomwareCampaignUse === 'Known');
+  return (
+    <div className="space-y-5">
+      <div className="card p-6"><h1 className="text-2xl font-semibold text-white">Threat Intelligence</h1><p className="text-sm text-slate-400 mt-1">Structured defensive intelligence from authoritative public sources.</p></div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <Stat label="Total KEV" value={kevItems.length.toLocaleString()} tone="accent" />
+        <Stat label="Ransomware-linked" value={ransomware.length.toLocaleString()} tone="critical" />
+        <Stat label="Unique Vendors" value={new Set(kevItems.map(v => v.vendorProject)).size} tone="warning" />
+        <Stat label="Distinct Products" value={new Set(kevItems.map(v => v.product)).size} tone="good" />
+      </div>
+      <DataCard title="Ransomware-linked Vulnerabilities" subtitle="KEV entries confirmed in ransomware campaigns" icon="⚑" loading={kev.loading} error={kev.error} onRetry={kev.refetch} empty={!ransomware.length}>
+        <div className="space-y-3 max-h-96 overflow-y-auto">
+          {ransomware.slice(-30).reverse().map(v => (
+            <div key={v.cveID} className="border border-white/5 rounded-lg p-3">
+              <div className="flex items-start justify-between gap-3 mb-1"><span className="mono text-xs text-cyan-400">{v.cveID}</span><span className="badge sev-critical">Ransomware</span></div>
+              <div className="text-sm text-slate-200">{v.vulnerabilityName}</div>
+              <div className="text-xs text-slate-500 mt-1">{v.vendorProject} · {v.product}</div>
+            </div>
+          ))}
+        </div>
+      </DataCard>
+    </div>
+  );
+}
+
+function Osint() {
+  const [mode, setMode] = useState('domain');
+  const [target, setTarget] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState(null);
+  const [ctResult, setCtResult] = useState(null);
+
+  async function submit(e) {
+    e.preventDefault(); if (!target.trim()) return;
+    setLoading(true); setError(null); setResult(null); setCtResult(null);
+    try { setResult(await Sources.rdap(target.trim())); } catch (e) { setError(e); }
+    finally { setLoading(false); }
+  }
+
+  async function ctSearch() {
+    if (!target.trim()) return;
+    setLoading(true); setError(null); setResult(null); setCtResult(null);
+    try {
+      const r = await Sources.crtsh(target.trim());
+      const seen = new Set();
+      setCtResult((r.data || []).filter(c => { const k = c.common_name + c.serial_number; if (seen.has(k)) return false; seen.add(k); return true; }));
+    } catch (e) { setError(e); }
+    finally { setLoading(false); }
+  }
+
+  return (
+    <div className="space-y-5">
+      <div className="card p-6"><h1 className="text-2xl font-semibold text-white">OSINT Center</h1><p className="text-sm text-slate-400 mt-1">Passive, public-source intelligence. No scraping, no PII harvesting.</p></div>
+      <div className="card p-5">
+        <div className="flex gap-2 mb-4">
+          {[{id:'domain',label:'Domain RDAP'},{id:'ip',label:'IP RDAP'},{id:'ct',label:'Cert Transparency'}].map(m => (
+            <button key={m.id} onClick={() => setMode(m.id)} className={`px-3 py-1.5 rounded-lg text-sm border ${mode === m.id ? 'bg-blue-500/10 border-blue-500/30 text-white' : 'border-white/10 text-slate-400'}`}>{m.label}</button>
+          ))}
+        </div>
+        <form onSubmit={mode === 'ct' ? (e => { e.preventDefault(); ctSearch(); }) : submit} className="flex gap-2">
+          <input value={target} onChange={e => setTarget(e.target.value)} placeholder={mode === 'ip' ? '8.8.8.8' : 'example.com'} className="input mono flex-1" />
+          <button type="submit" disabled={loading} className="btn-primary">{loading ? '…' : 'Query'}</button>
+        </form>
+        {error && <div className="mt-3"><ErrorCard error={error} /></div>}
+        {result && (
+          <div className="mt-4 space-y-3">
+            <div className="flex justify-end"><SourceBadge status="LIVE" source="RDAP (rdap.org)" retrievedAt={result._provenance?.retrieved_at} /></div>
+            <pre className="mono text-xs bg-black/30 border border-white/5 rounded-lg p-3 overflow-auto max-h-96 whitespace-pre-wrap">{JSON.stringify(result.data, null, 2)}</pre>
+          </div>
+        )}
+        {ctResult && (
+          <div className="mt-4 space-y-3">
+            <div className="flex justify-end"><SourceBadge status="LIVE" source="crt.sh" /></div>
+            <div className="text-xs text-slate-400">{ctResult.length} unique certificates found</div>
+            <div className="space-y-2 max-h-96 overflow-y-auto">
+              {ctResult.slice(0, 50).map((c, i) => (
+                <div key={i} className="border border-white/5 rounded-lg p-3">
+                  <div className="mono text-xs text-cyan-400">{c.common_name}</div>
+                  <div className="flex flex-wrap gap-3 text-xs text-slate-500 mt-1">{c.issuer_name && <span>{c.issuer_name}</span>}{c.not_before && <span>{new Date(c.not_before).toLocaleDateString()}</span>}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+      <div className="card p-5">
+        <h3 className="text-sm font-semibold text-slate-200 mb-3">Ethical Use Policy</h3>
+        <ul className="text-sm text-slate-400 space-y-2">
+          <li>• Queries only <strong className="text-slate-300">public registry data</strong> via RDAP and Certificate Transparency logs.</li>
+          <li>• No personal data collection, credential harvesting, or phishing workflows.</li>
+          <li>• Do not use for stalking, unauthorized reconnaissance, or targeting individuals.</li>
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+function Research() {
+  const [query, setQuery] = useState('topic:cybersecurity');
+  const data = useApi(() => Sources.githubRepos({ q: query + ' stars:>500', per_page: 20 }), [query]);
+  const repos = data.data?.data?.items || [];
+  const topics = ['threat-intelligence','malware-analysis','incident-response','forensics','vulnerability-research','reverse-engineering','pentest-tools','detection-engineering','cloud-security','appsec'];
+  return (
+    <div className="space-y-5">
+      <div className="card p-6"><h1 className="text-2xl font-semibold text-white">Security Research</h1><p className="text-sm text-slate-400 mt-1">Curated research repositories from the open-source security community.</p></div>
+      <div className="card p-4 flex flex-wrap gap-1.5">
+        {topics.map(t => <button key={t} onClick={() => setQuery(`topic:${t}`)} className={`text-[11px] px-2.5 py-1 rounded border transition-colors mono ${query === `topic:${t}` ? 'border-cyan-500/50 bg-cyan-500/10 text-cyan-300' : 'border-white/10 text-slate-400 hover:border-blue-500/30 hover:text-white'}`}>{t}</button>)}
+      </div>
+      <DataCard title="Research Repositories" subtitle={`${(data.data?.data?.total_count || 0).toLocaleString()} results`} loading={data.loading} error={data.error} onRetry={data.refetch} empty={!repos.length} actions={<SourceBadge status="LIVE" source="GitHub" retrievedAt={data.lastUpdated} />}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {repos.map(r => (
+            <a key={r.id} href={r.html_url} target="_blank" rel="noopener noreferrer" className="border border-white/5 rounded-lg p-4 hover:border-blue-500/30 transition-colors">
+              <div className="text-sm font-medium text-slate-200 mb-1 truncate">{r.full_name}</div>
+              <p className="text-xs text-slate-500 truncate-2 min-h-[32px]">{r.description || 'No description'}</p>
+              <div className="flex items-center gap-3 mt-3 text-xs text-slate-500"><span className="text-amber-400">★ {r.stargazers_count.toLocaleString()}</span>{r.language && <span>{r.language}</span>}</div>
+            </a>
+          ))}
+        </div>
+      </DataCard>
+    </div>
+  );
+}
+
+function Alerts() {
+  const kev = useApi(() => Sources.kev(), []);
+  const nvd = useApi(() => Sources.nvdSearch({ resultsPerPage: 20 }), []);
+  const alerts = useMemo(() => {
+    const out = [];
+    const k = kev.data?.data?.vulnerabilities || [];
+    const n = nvd.data?.data?.vulnerabilities || [];
+    const cutoff = Date.now() - 30 * 24 * 3600 * 1000;
+    k.filter(v => new Date(v.dateAdded).getTime() > cutoff).forEach(v => {
+      out.push({ severity: v.knownRansomwareCampaignUse === 'Known' ? 'critical' : 'high', category: 'Known Exploited', title: `${v.cveID} — ${v.vulnerabilityName}`, message: `${v.vendorProject} · ${v.product}`, source: 'CISA KEV', date: v.dateAdded });
+    });
+    n.filter(v => { const m = v.cve.metrics; const sev = (m?.cvssMetricV31?.[0] || m?.cvssMetricV30?.[0])?.cvssData?.baseSeverity; return sev === 'CRITICAL'; }).slice(0, 20).forEach(v => {
+      const desc = (v.cve.descriptions || []).find(d => d.lang === 'en')?.value || '';
+      out.push({ severity: 'critical', category: 'New Critical CVE', title: v.cve.id, message: desc.slice(0, 160), source: 'NVD', date: v.cve.published });
+    });
+    return out.sort((a, b) => new Date(b.date) - new Date(a.date));
+  }, [kev.data, nvd.data]);
+  const loading = kev.loading || nvd.loading;
+  return (
+    <div className="space-y-5">
+      <div className="card p-6 flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div><h1 className="text-2xl font-semibold text-white">Alert Center</h1><p className="text-sm text-slate-400 mt-1">Derived from public sources. Polling-based — not real-time streaming.</p></div>
+        <SourceBadge status="POLLING" source="Derived" />
+      </div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <Stat label="Total Alerts" value={alerts.length} tone="accent" />
+        <Stat label="Critical" value={alerts.filter(a => a.severity === 'critical').length} tone="critical" />
+        <Stat label="High" value={alerts.filter(a => a.severity === 'high').length} tone="warning" />
+        <Stat label="Sources" value={new Set(alerts.map(a => a.source)).size} tone="good" />
+      </div>
+      <DataCard title="Active Alerts" subtitle="Sorted by recency" loading={loading} error={kev.error || nvd.error} onRetry={() => { kev.refetch(); nvd.refetch(); }} empty={!alerts.length}>
+        <ul className="space-y-3 max-h-[600px] overflow-y-auto">
+          {alerts.slice(0, 60).map((a, i) => (
+            <li key={i} className={`border rounded-lg p-3 ${a.severity === 'critical' ? 'border-rose-500/30 bg-rose-500/5' : 'border-amber-500/20 bg-amber-500/5'}`}>
+              <div className="flex items-start justify-between gap-3 mb-1"><SeverityBadge severity={a.severity} /><span className="text-[10px] text-slate-500">{new Date(a.date).toLocaleString()}</span></div>
+              <div className="text-sm text-slate-200 font-medium">{a.title}</div>
+              <div className="text-xs text-slate-400 mt-1 truncate-2">{a.message}</div>
+              <div className="text-[10px] text-slate-500 mt-2">Source: {a.source} · {a.category}</div>
+            </li>
+          ))}
+        </ul>
+      </DataCard>
+    </div>
+  );
+}
+
+function Analytics() {
+  const nvd = useApi(() => Sources.nvdSearch({ resultsPerPage: 100 }), []);
+  const kev = useApi(() => Sources.kev(), []);
+  const chartRef = useRef(null);
+  const chartInstance = useRef(null);
+  const items = nvd.data?.data?.vulnerabilities || [];
+  const kevItems = kev.data?.data?.vulnerabilities || [];
+
+  const severityData = useMemo(() => {
+    const counts = { CRITICAL:0, HIGH:0, MEDIUM:0, LOW:0 };
+    items.forEach(v => { const m = v.cve.metrics; const sev = (m?.cvssMetricV31?.[0] || m?.cvssMetricV30?.[0] || m?.cvssMetricV2?.[0])?.cvssData?.baseSeverity; if (sev && counts[sev.toUpperCase()] !== undefined) counts[sev.toUpperCase()]++; });
+    return Object.entries(counts).map(([name, value]) => ({ name, value }));
+  }, [items]);
+
+  const vendorData = useMemo(() => {
+    const c = {}; kevItems.forEach(v => { c[v.vendorProject] = (c[v.vendorProject] || 0) + 1; });
+    return Object.entries(c).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([name, value]) => ({ name, value }));
+  }, [kevItems]);
+
+  useEffect(() => {
+    if (!chartRef.current) return;
+    if (!chartInstance.current) chartInstance.current = echarts.init(chartRef.current, null, { renderer: 'canvas' });
+    const chart = chartInstance.current;
+    chart.setOption({
+      backgroundColor: 'transparent',
+      tooltip: { trigger: 'item', backgroundColor: 'rgba(10,14,23,0.95)', borderColor: 'rgba(255,255,255,0.1)', textStyle: { color: '#e2e8f0', fontSize: 12 } },
+      grid: { left: '3%', right: '4%', bottom: '3%', top: '10%', containLabel: true },
+      xAxis: { type: 'category', data: vendorData.map(d => d.name), axisLabel: { color: '#94a3b8', fontSize: 10, rotate: 30 }, axisLine: { lineStyle: { color: 'rgba(255,255,255,0.1)' } } },
+      yAxis: { type: 'value', axisLabel: { color: '#94a3b8', fontSize: 10 }, splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)' } } },
+      series: [{ type: 'bar', data: vendorData.map(d => d.value), itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#22d3ee' }, { offset: 1, color: '#3b82f6' }]), borderRadius: [4, 4, 0, 0] }, barWidth: '55%' }],
+      animationDuration: 600,
+    }, true);
+    const onResize = () => chart.resize();
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, [vendorData]);
+
+  useEffect(() => () => { chartInstance.current?.dispose?.(); chartInstance.current = null; }, []);
+
+  return (
+    <div className="space-y-5">
+      <div className="card p-6"><h1 className="text-2xl font-semibold text-white">Analytics</h1><p className="text-sm text-slate-400 mt-1">Aggregated charts from live source data. No synthetic numbers.</p></div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <DataCard title="NVD Severity Distribution" subtitle={`Based on current ${items.length}-CVE sample`} icon="∿" loading={nvd.loading} error={nvd.error} onRetry={nvd.refetch} empty={!items.length}>
+          <div className="space-y-3">
+            {severityData.map(({ name, value }) => {
+              const total = severityData.reduce((a, b) => a + b.value, 0) || 1;
+              const pct = (value / total) * 100;
+              return (
+                <div key={name}>
+                  <div className="flex items-center justify-between text-xs mb-1"><SeverityBadge severity={name} /><span className="text-slate-400">{value} ({pct.toFixed(1)}%)</span></div>
+                  <div className="h-2 rounded-full bg-white/5 overflow-hidden"><div className="h-full rounded-full" style={{ width: `${pct}%`, background: { CRITICAL:'#dc2626', HIGH:'#f97316', MEDIUM:'#eab308', LOW:'#22c55e' }[name] }} /></div>
+                </div>
+              );
+            })}
+          </div>
+        </DataCard>
+        <DataCard title="Top KEV Vendors" subtitle="From full CISA KEV catalog" icon="⌥" loading={kev.loading} error={kev.error} onRetry={kev.refetch} empty={!vendorData.length}>
+          <div ref={chartRef} style={{ width: '100%', height: '260px' }} />
+        </DataCard>
+      </div>
+      <div className="card p-5">
+        <h3 className="text-sm font-semibold text-slate-200 mb-3">How These Charts Are Computed</h3>
+        <ul className="text-xs text-slate-400 space-y-1.5">
+          <li>• <strong className="text-slate-300">Severity distribution:</strong> counted from the current NVD response sample of {items.length} records.</li>
+          <li>• <strong className="text-slate-300">Top KEV vendors:</strong> aggregated from all {kevItems.length} entries in CISA KEV by vendorProject.</li>
+          <li>• No figures are simulated. If a source fails, the corresponding chart shows an error.</li>
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+function DataSources() {
+  const sources = [
+    { name: 'NVD', url: 'https://nvd.nist.gov/developers/vulnerabilities', status: 'live', note: '5 req/30s unauth · 50 req/30s with key' },
+    { name: 'CISA KEV', url: 'https://www.cisa.gov/known-exploited-vulnerabilities-catalog', status: 'live', note: 'No rate limit · cached 1h' },
+    { name: 'GitHub REST API', url: 'https://docs.github.com/rest', status: 'live', note: '60 req/h unauth · 5000 with token' },
+    { name: 'OSV.dev', url: 'https://osv.dev/docs/', status: 'live', note: 'No rate limit published' },
+    { name: 'ipapi.co', url: 'https://ipapi.co/api/', status: 'live', note: '1000 req/day free tier' },
+    { name: 'RDAP (rdap.org)', url: 'https://rdap.org', status: 'live', note: 'Public, no auth' },
+    { name: 'Google DNS (DoH)', url: 'https://developers.google.com/speed/public-dns/docs/doh', status: 'live', note: 'Public, no auth' },
+    { name: 'crt.sh', url: 'https://crt.sh', status: 'live', note: 'Certificate Transparency logs' },
+    { name: 'RSS2JSON bridge', url: 'https://rss2json.com', status: 'live', note: 'Free tier for RSS feeds' },
+    { name: 'Shodan InternetDB', url: 'https://internetdb.shodan.io', status: 'live', note: 'Free, no key required' },
+    { name: 'Shodan Full API', url: 'https://developer.shodan.io/api', status: 'server', note: 'Requires API key + CORS proxy' },
+    { name: 'allorigins.win', url: 'https://allorigins.win', status: 'live', note: 'CORS proxy for Shodan and other restricted APIs' },
+  ];
+  const statusCls = { live:'badge-live', server:'badge-server', offline:'badge-demo' };
+  return (
+    <div className="space-y-5">
+      <div className="card p-6"><h1 className="text-2xl font-semibold text-white">Data Sources</h1><p className="text-sm text-slate-400 mt-1">All upstream APIs with attribution, status, and limitations.</p></div>
+      <div className="card overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead><tr className="text-left text-xs uppercase text-slate-500 border-b border-white/5 bg-white/[0.02]"><th className="px-5 py-3">Source</th><th className="px-3 py-3">Status</th><th className="px-3 py-3 hidden md:table-cell">Notes</th><th className="px-3 py-3">Docs</th></tr></thead>
+            <tbody>
+              {sources.map(s => (
+                <tr key={s.name} className="border-b border-white/5 table-row-hover">
+                  <td className="px-5 py-3 text-slate-200 font-medium">{s.name}</td>
+                  <td className="px-3 py-3"><span className={`badge ${statusCls[s.status]}`}>{s.status === 'server' ? 'SERVER' : 'LIVE'}</span></td>
+                  <td className="px-3 py-3 hidden md:table-cell text-xs text-slate-500">{s.note}</td>
+                  <td className="px-3 py-3"><a href={s.url} target="_blank" rel="noopener noreferrer" className="text-xs text-cyan-400 hover:underline">Open →</a></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div className="card p-5">
+        <h3 className="text-sm font-semibold text-slate-200 mb-3">Data Provenance & Labels</h3>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="border border-white/5 rounded-lg p-4"><SourceBadge status="LIVE" /><div className="text-xs text-slate-400 mt-2">Fetched directly from the source API. No cache hit.</div></div>
+          <div className="border border-white/5 rounded-lg p-4"><SourceBadge status="CACHED" /><div className="text-xs text-slate-400 mt-2">Served from browser cache to respect rate limits.</div></div>
+          <div className="border border-white/5 rounded-lg p-4"><SourceBadge status="SERVER" /><div className="text-xs text-slate-400 mt-2">Requires server-side integration or CORS proxy.</div></div>
+          <div className="border border-white/5 rounded-lg p-4"><SourceBadge status="DEMO" /><div className="text-xs text-slate-400 mt-2">Placeholder only. Never mixed with live data.</div></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Settings() {
+  const { state, dispatch, toast } = useApp();
+  const p = state.preferences;
+  function update(patch) { dispatch({ type: 'SET_PREFS', prefs: patch }); toast('Preference saved', 'success', 2000); }
+  function clearCache() { cache.clear(); toast('Browser cache cleared', 'success'); }
+
+  return (
+    <div className="space-y-5">
+      <div className="card p-6"><h1 className="text-2xl font-semibold text-white">Settings</h1><p className="text-sm text-slate-400 mt-1">Preferences are stored locally. API keys never leave your browser.</p></div>
+
+      {/* Shodan API Key */}
+      <div className="card p-5 space-y-3">
+        <h3 className="text-sm font-semibold text-slate-200">Shodan API Key</h3>
+        <p className="text-xs text-slate-500">Required for full host lookup and search. Stored only in your browser's localStorage. Get a key at <a className="underline" href="https://account.shodan.io" target="_blank" rel="noopener noreferrer">account.shodan.io</a>.</p>
+        <div className="flex gap-2">
+          <input type="password" value={p.shodanApiKey} onChange={e => update({ shodanApiKey: e.target.value })} placeholder="Enter Shodan API key" className="input mono flex-1" />
+        </div>
+        {p.shodanApiKey && <div className="text-xs text-emerald-400">✓ Key configured. Shodan full API features are available in the Shodan page.</div>}
+        {!p.shodanApiKey && <div className="text-xs text-amber-400">⚡ No key set. Shodan page will use free InternetDB mode only.</div>}
+      </div>
+
+      {/* Appearance */}
+      <div className="card p-5 space-y-4">
+        <h3 className="text-sm font-semibold text-slate-200">Appearance</h3>
+        <label className="block"><span className="text-xs text-slate-400">Animation intensity</span>
+          <select value={p.animationIntensity} onChange={e => update({ animationIntensity: e.target.value })} className="input mt-1.5">
+            <option value="off">Off</option><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option>
+          </select>
+        </label>
+      </div>
+
+      {/* Data */}
+      <div className="card p-5 space-y-4">
+        <h3 className="text-sm font-semibold text-slate-200">Data</h3>
+        <label className="block"><span className="text-xs text-slate-400">Default landing page</span>
+          <select value={p.defaultPage} onChange={e => update({ defaultPage: e.target.value })} className="input mt-1.5">
+            <option value="/">Dashboard</option><option value="/vulnerabilities">Vulnerabilities</option><option value="/shodan">Shodan</option><option value="/news">Security News</option>
+          </select>
+        </label>
+        <div><span className="text-xs text-slate-400">Cache controls</span><div className="mt-1.5"><button onClick={clearCache} className="btn-ghost text-sm">Clear browser cache</button></div></div>
+      </div>
+
+      {/* API Status */}
+      <div className="card p-5 space-y-3">
+        <h3 className="text-sm font-semibold text-slate-200">API Configuration Status</h3>
+        <div className="space-y-2 text-sm">
+          {[
+            { name: 'NVD', status: 'Public — no key required', ok: true },
+            { name: 'CISA KEV', status: 'Public — no key required', ok: true },
+            { name: 'GitHub', status: 'Public — no key required (60 req/h)', ok: true },
+            { name: 'OSV.dev', status: 'Public — no key required', ok: true },
+            { name: 'Shodan InternetDB', status: 'Public — no key required', ok: true },
+            { name: 'Shodan Full API', status: p.shodanApiKey ? 'API key configured' : 'Requires SHODAN_API_KEY (set above)', ok: !!p.shodanApiKey },
+          ].map(s => (
+            <div key={s.name} className="flex items-center justify-between gap-3 border border-white/5 rounded-lg px-3 py-2">
+              <span className="text-slate-200">{s.name}</span>
+              <div className="flex items-center gap-2"><span className={`w-1.5 h-1.5 rounded-full ${s.ok ? 'bg-emerald-400' : 'bg-amber-400'}`} /><span className="text-xs text-slate-400">{s.status}</span></div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* About */}
+      <div className="card p-5">
+        <h3 className="text-sm font-semibold text-slate-200 mb-3">About</h3>
+        <div className="text-xs text-slate-500 space-y-1">
+          <div><strong className="text-slate-400">Cyber Shadow PRO</strong> — v1.1.0</div>
+          <div>Defensive cybersecurity intelligence platform.</div>
+          <div>Intended for: threat intelligence, vulnerability awareness, asset visibility, research, and authorized security testing.</div>
+          <div className="pt-2 text-amber-300/80">Not intended for: unauthorized access, credential theft, phishing, malware deployment, brute-force automation, or attacks against third-party systems.</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SearchResults({ searchParams }) {
+  const q = searchParams.get('q') || '';
+  const nvd = useApi(() => Sources.nvdSearch({ keyword: q, resultsPerPage: 20 }), [q]);
+  const gh = useApi(() => Sources.githubRepos({ q, per_page: 15 }), [q]);
+  const nvdItems = nvd.data?.data?.vulnerabilities || [];
+  const ghItems = gh.data?.data?.items || [];
+  return (
+    <div className="space-y-5">
+      <div className="card p-6"><h1 className="text-2xl font-semibold text-white">Search Results</h1><p className="text-sm text-slate-400 mt-1">Query: <span className="mono text-cyan-400">{q}</span></p></div>
+      <DataCard title="Vulnerabilities (NVD)" subtitle={`${nvdItems.length} results`} loading={nvd.loading} error={nvd.error} onRetry={nvd.refetch} empty={!nvdItems.length} actions={<SourceBadge status="LIVE" source="NVD" />}>
+        <div className="space-y-2">
+          {nvdItems.map(v => {
+            const m = v.cve.metrics;
+            const sev = (m?.cvssMetricV31?.[0] || m?.cvssMetricV30?.[0] || m?.cvssMetricV2?.[0])?.cvssData?.baseSeverity;
+            return (
+              <div key={v.cve.id} className="border border-white/5 rounded-lg p-3">
+                <div className="flex items-center justify-between gap-3 mb-1"><span className="mono text-xs text-cyan-400">{v.cve.id}</span><SeverityBadge severity={sev} /></div>
+                <p className="text-xs text-slate-400 truncate-2">{(v.cve.descriptions || []).find(d => d.lang === 'en')?.value || ''}</p>
+              </div>
+            );
+          })}
+        </div>
+      </DataCard>
+      <DataCard title="Repositories (GitHub)" subtitle={`${ghItems.length} results`} loading={gh.loading} error={gh.error} onRetry={gh.refetch} empty={!ghItems.length} actions={<SourceBadge status="LIVE" source="GitHub" />}>
+        <ul className="space-y-2">
+          {ghItems.map(r => (
+            <li key={r.id} className="border border-white/5 rounded-lg p-3 hover:border-blue-500/20 transition-colors">
+              <a href={r.html_url} target="_blank" rel="noopener noreferrer" className="block">
+                <div className="text-sm font-medium text-slate-200">{r.full_name}</div>
+                <p className="text-xs text-slate-500 truncate-2 mt-1">{r.description}</p>
+                <div className="text-xs text-amber-400 mt-1">★ {r.stargazers_count.toLocaleString()}</div>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </DataCard>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   APP SHELL
+   ═══════════════════════════════════════════════════════════════════════ */
+
+function useHashRoute() {
+  const [hash, setHash] = useState(() => window.location.hash.slice(1) || '/');
+  useEffect(() => { const onHash = () => setHash(window.location.hash.slice(1) || '/'); window.addEventListener('hashchange', onHash); return () => window.removeEventListener('hashchange', onHash); }, []);
+  const [path, qs] = hash.split('?');
+  return { path, searchParams: new URLSearchParams(qs || '') };
+}
+
+function App() {
+  const { path, searchParams } = useHashRoute();
+  const { state } = useApp();
+  const navigate = useCallback((to) => { window.location.hash = to; window.scrollTo({ top: 0, behavior: 'smooth' }); }, []);
+
+  useEffect(() => {
+    if (!window.location.hash && state.preferences.defaultPage !== '/') navigate(state.preferences.defaultPage);
+  }, []); // eslint-disable-line
+
+  let page;
+  if (path === '/') page = <Dashboard navigate={navigate} />;
+  else if (path === '/threat-intel') page = <ThreatIntel />;
+  else if (path === '/vulnerabilities') page = <Vulnerabilities searchParams={searchParams} navigate={navigate} />;
+  else if (path === '/shodan') page = <ShodanPage />;
+  else if (path === '/github') page = <GitHubIntel />;
+  else if (path === '/news') page = <News />;
+  else if (path === '/threat-map') page = <ThreatMap />;
+  else if (path === '/tools') page = <Tools />;
+  else if (path === '/osint') page = <Osint />;
+  else if (path === '/research') page = <Research />;
+  else if (path === '/alerts') page = <Alerts />;
+  else if (path === '/analytics') page = <Analytics />;
+  else if (path === '/sources') page = <DataSources />;
+  else if (path === '/settings') page = <Settings />;
+  else if (path === '/search') page = <SearchResults searchParams={searchParams} />;
+  else page = (
+    <div className="card p-8 text-center">
+      <div className="text-4xl mb-3">◌</div>
+      <h2 className="text-lg font-semibold text-slate-200 mb-1">Page not found</h2>
+      <p className="text-sm text-slate-500 mb-4">The route <span className="mono text-cyan-400">{path}</span> does not exist.</p>
+      <button onClick={() => navigate('/')} className="btn-primary">Return to Dashboard</button>
+    </div>
+  );
+
+  return (
+    <div className="relative min-h-screen flex bg-shadow-950">
+      <NetworkBackground intensity={state.preferences.animationIntensity} opacity={0.45} />
+      <div className="relative z-10 flex w-full">
+        <Sidebar currentPath={path} navigate={navigate} />
+        <div className="flex-1 flex flex-col min-w-0">
+          <Topbar navigate={navigate} />
+          <main className="flex-1 overflow-y-auto p-4 lg:p-6 pb-24 lg:pb-6" id="main-content">
+            <div className="max-w-[1600px] mx-auto">{page}</div>
+          </main>
+        </div>
+      </div>
+      <MobileNav currentPath={path} navigate={navigate} />
+      <CommandPalette navigate={navigate} />
+      <ToastHost />
+    </div>
+  );
+}
+
+const root = createRoot(document.getElementById('root'));
+root.render(<AppProvider><App /></AppProvider>);
+</script>
+</body>
+</html>
